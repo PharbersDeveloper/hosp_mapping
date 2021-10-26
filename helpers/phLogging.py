@@ -14,3 +14,6 @@ class PhLogging(object):
 
     def opfile(self):
         return logging.getLogger('opLog')
+
+    def countfile(self):
+        return logging.getLogger('countLog')

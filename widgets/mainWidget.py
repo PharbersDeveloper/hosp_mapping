@@ -1,5 +1,7 @@
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableView
+
+from helpers.phLogging import PhLogging
 from model.hospModel import PhHospModel
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import Qt
@@ -48,8 +50,8 @@ class PhMainWidget(QWidget):
         return ~self.isAdmin()
 
     def on_data_modify(self, index):
-        print(self.last_dy)
         self.tableView.verticalScrollBar().setValue(self.last_dy)
+        PhLogging().countfile().info(1)
 
     def on_vertical_scrolled(self, dy):
         self.last_dy = self.current_dy
