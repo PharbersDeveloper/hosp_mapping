@@ -1,6 +1,7 @@
 from helpers.singleton import singleton
 import tailer
 import os
+import json
 
 @singleton
 class PhAppConfig(object):
@@ -8,6 +9,7 @@ class PhAppConfig(object):
         self.conf = {}
         self.conf['unsync_step_count'] = self.queryUnsavedStepsCound()
         self.conf['unsync_steps'] = self.queryUnsavedSteps()
+        self.conf['defined_schema'] = self.queryDefineSchema()
 
     def getConf(self):
         return self.conf
@@ -38,3 +40,8 @@ class PhAppConfig(object):
                     result.append(item)
             self.conf['unsync_steps_index'] = tmp
             return result
+
+    def queryDefineSchema(self):
+        f = open('./config/projectDataConfig.json')
+        tmp = json.loads(f.read(1024))
+        return tmp['schema']

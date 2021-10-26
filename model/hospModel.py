@@ -12,46 +12,9 @@ class PhHospModel(QAbstractTableModel):
     """
     def __init__(self):
         super(PhHospModel, self).__init__()
-        self._headers = ['Index', 'Id', 'Hospname', 'Level', 'Address', 'lop', 'ltm']
+        self._headers = PhAppConfig().getConf()['defined_schema']
         self._data = []
-        self.updateData(self.refreshQueryData())
-
-    def refreshQueryData(self):
-        parameters = {
-            'query': "select * from prod_clean order by Index limit 1000",
-            'schema': self._headers
-        }
-        conf = PhAppConfig()
-        conn = http.client.HTTPSConnection("api.pharbers.com")
-        payload = json.dumps(parameters)
-        headers = {
-            'Authorization': conf.getConf()['access_token'],
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        }
-        conn.request("POST", "/phchproxyquery", payload, headers)
-        res = conn.getresponse()
-
-        if (res.status == 200) & (res.reason == 'OK'):
-            login_data = res.read().decode('utf-8')
-            result = json.loads(login_data)
-            conn.close()
-            return list(map(self.serverDataAdapter, result))
-        else:
-            error = {'message': 'query db error'}
-            PhLogging().console().debug(error)
-            conn.close()
-            return error
-
-    def serverDataAdapter(self, item):
-        steps = PhAppConfig().getConf()['unsync_steps']
-        tmp = item['Index']
-        steps_index = [index for index, f in enumerate(steps) if f[0] == tmp]
-        if len(steps_index) == 0:
-            return [item['Index'], item['Id'], item['Hospname'], item['Level'], item['Address'], item['lop'], item['ltm']]
-        else:
-            return steps[steps_index[0]]
-
+        # self.updateData(self.refreshQueryData())
 
     def updateData(self, data):
         """

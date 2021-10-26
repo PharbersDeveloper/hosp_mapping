@@ -17,6 +17,7 @@ class PhMainWidget(QWidget):
 
         self.tableView = QTableView()
         model = PhHospModel()
+        model.updateData(self.queryDatabaseData("select * from prod_clean order by Index limit 1000"))
         model.signal_data_mod.connect(self.on_data_modify)
         self.tableView.setModel(model)
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
@@ -118,8 +119,8 @@ class PhMainWidget(QWidget):
         PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
 
     def on_refresh_btn_clicked(self):
-        # TODO: refresh Data
-        pass
+        self.tableView.model() \
+            .updateData(self.queryDatabaseData("select * from prod_clean order by Index limit 1000"))
 
     def updataDBQuery(self, sql):
         parameters = {
@@ -146,3 +147,40 @@ class PhMainWidget(QWidget):
             conn.close()
             PhLogging().console().debug(error)
             return False
+
+    def queryDatabaseData(self, sql):
+        parameters = {
+            # 'query': "select * from prod_clean order by Index limit 1000",
+            'query': sql,
+            'schema': PhAppConfig().getConf()['defined_schema']
+        }
+        conf = PhAppConfig()
+        conn = http.client.HTTPSConnection("api.pharbers.com")
+        payload = json.dumps(parameters)
+        headers = {
+            'Authorization': conf.getConf()['access_token'],
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
+        conn.request("POST", "/phchproxyquery", payload, headers)
+        res = conn.getresponse()
+
+        if (res.status == 200) & (res.reason == 'OK'):
+            login_data = res.read().decode('utf-8')
+            result = json.loads(login_data)
+            conn.close()
+            return list(map(self.serverDataAdapter, result))
+        else:
+            error = {'message': 'query db error'}
+            PhLogging().console().debug(error)
+            conn.close()
+            return error
+
+    def serverDataAdapter(self, item):
+        steps = PhAppConfig().getConf()['unsync_steps']
+        tmp = item['Index']
+        steps_index = [index for index, f in enumerate(steps) if f[0] == tmp]
+        if len(steps_index) == 0:
+            return [item['Index'], item['Id'], item['Hospname'], item['Level'], item['Address'], item['lop'], item['ltm']]
+        else:
+            return steps[steps_index[0]]
