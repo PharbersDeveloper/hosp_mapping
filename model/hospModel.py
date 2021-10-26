@@ -43,7 +43,14 @@ class PhHospModel(QAbstractTableModel):
             return error
 
     def serverDataAdapter(self, item):
-        return [item['Index'], item['Id'], item['Hospname'], item['Level'], item['Address'], item['lop'], item['ltm']]
+        steps = PhAppConfig().getConf()['unsync_steps']
+        tmp = item['Index']
+        steps_index = [index for index, f in enumerate(steps) if f[0] == tmp]
+        if len(steps_index) == 0:
+            return [item['Index'], item['Id'], item['Hospname'], item['Level'], item['Address'], item['lop'], item['ltm']]
+        else:
+            return steps[steps_index[0]]
+
 
     def updateData(self, data):
         """

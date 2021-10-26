@@ -7,6 +7,7 @@ class PhAppConfig(object):
     def __init__(self):
         self.conf = {}
         self.conf['unsync_step_count'] = self.queryUnsavedStepsCound()
+        self.conf['unsync_steps'] = self.queryUnsavedSteps()
 
     def getConf(self):
         return self.conf
@@ -20,3 +21,12 @@ class PhAppConfig(object):
                 return 0
             else:
                 return int(tails[0])
+
+    def queryUnsavedSteps(self):
+        if not os.path.exists('./logs/op_logs.out'):
+            return []
+        else:
+            tails = tailer.tail(open('./logs/op_logs.out'), self.conf['unsync_step_count'])
+            tails.reverse()
+            tails = tails[1:]
+            return list(map(lambda x: x.split('\t'), tails))
