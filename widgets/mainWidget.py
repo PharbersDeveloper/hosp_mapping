@@ -7,12 +7,16 @@ from helpers.appConfig import PhAppConfig
 
 
 class PhMainWidget(QWidget):
+    current_dy = 0
+    last_dy = 0
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.tableView = QTableView()
         model = PhHospModel()
+        model.signal_data_mod.connect(self.on_data_modify)
         self.tableView.setModel(model)
+        self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
 
         self.wev = QWebEngineView()
         self.wev.load(QUrl('https://www.baidu.com'))
@@ -41,5 +45,12 @@ class PhMainWidget(QWidget):
         return self.getConf()['scope'] == '*'
 
     def isTmpUser(self):
-        conf = PhAppConfig()
         return ~self.isAdmin()
+
+    def on_data_modify(self, index):
+        print(self.last_dy)
+        self.tableView.verticalScrollBar().setValue(self.last_dy)
+
+    def on_vertical_scrolled(self, dy):
+        self.last_dy = self.current_dy
+        self.current_dy = dy

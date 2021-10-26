@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QAbstractTableModel
+from PyQt5.QtCore import Qt, QAbstractTableModel, pyqtSignal, QModelIndex
 import http.client
 import json
 from helpers.appConfig import PhAppConfig
@@ -6,6 +6,7 @@ from helpers.phLogging import PhLogging
 
 
 class PhHospModel(QAbstractTableModel):
+    signal_data_mod = pyqtSignal(QModelIndex)
     """
     表格数据模型MVC模式
     """
@@ -24,6 +25,7 @@ class PhHospModel(QAbstractTableModel):
         conn = http.client.HTTPSConnection("api.pharbers.com")
         payload = json.dumps(parameters)
         PhLogging().console().debug(conf.getConf()['access_token'])
+        PhLogging().opfile().info(conf.getConf()['access_token'])
         headers = {
             'Authorization': conf.getConf()['access_token'],
             'Accept': 'application/json',
@@ -85,3 +87,16 @@ class PhHospModel(QAbstractTableModel):
 
     def flags(self, index):
         return super(PhHospModel, self).flags(index) | Qt.ItemIsEditable
+
+    def setData(self, index, value, role=Qt.EditRole):
+        # 编辑后更新模型中的数据 View中编辑后，View会调用这个方法修改Model中的数据
+        if index.isValid() and 0 <= index.row() < len(self._data) and value:
+            col = index.column()
+            if 0 < col < len(self._headers):
+                self.beginResetModel()
+                self._data[index.row()][col] = value
+                self.endResetModel()
+                self.signal_data_mod.emit(index)
+                return True
+        else:
+            return False
