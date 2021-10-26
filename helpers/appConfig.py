@@ -29,4 +29,12 @@ class PhAppConfig(object):
             tails = tailer.tail(open('./logs/op_logs.out'), self.conf['unsync_step_count'])
             tails.reverse()
             tails = tails[1:]
-            return list(map(lambda x: x.split('\t'), tails))
+            tails = list(map(lambda x: x.split('\t'), tails))
+            tmp = []
+            result = []
+            for item in tails:
+                if item[0] not in tmp:
+                    tmp.append(item[0])
+                    result.append(item)
+            self.conf['unsync_steps_index'] = tmp
+            return result

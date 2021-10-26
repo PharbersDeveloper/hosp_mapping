@@ -18,7 +18,7 @@ class PhHospModel(QAbstractTableModel):
 
     def refreshQueryData(self):
         parameters = {
-            'query': "select * from prod_clean limit 1000",
+            'query': "select * from prod_clean order by Index limit 1000",
             'schema': self._headers
         }
         conf = PhAppConfig()
@@ -39,6 +39,7 @@ class PhHospModel(QAbstractTableModel):
             return list(map(self.serverDataAdapter, result))
         else:
             error = {'message': 'query db error'}
+            PhLogging().console().debug(error)
             conn.close()
             return error
 
