@@ -12,7 +12,7 @@ class PhAppConfig(object):
         return self.conf
 
     def queryUnsavedStepsCound(self):
-        if ~os.path.exists('./logs/count_logs.out'):
+        if not os.path.exists('./logs/count_logs.out'):
             return 0
         else:
             tails = tailer.tail(open('./logs/count_logs.out'), 1)

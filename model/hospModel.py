@@ -6,7 +6,7 @@ from helpers.phLogging import PhLogging
 
 
 class PhHospModel(QAbstractTableModel):
-    signal_data_mod = pyqtSignal(QModelIndex)
+    signal_data_mod = pyqtSignal(str)
     """
     表格数据模型MVC模式
     """
@@ -24,8 +24,6 @@ class PhHospModel(QAbstractTableModel):
         conf = PhAppConfig()
         conn = http.client.HTTPSConnection("api.pharbers.com")
         payload = json.dumps(parameters)
-        PhLogging().console().debug(conf.getConf()['access_token'])
-        PhLogging().opfile().info(conf.getConf()['access_token'])
         headers = {
             'Authorization': conf.getConf()['access_token'],
             'Accept': 'application/json',
@@ -96,7 +94,7 @@ class PhHospModel(QAbstractTableModel):
                 self.beginResetModel()
                 self._data[index.row()][col] = value
                 self.endResetModel()
-                self.signal_data_mod.emit(index)
+                self.signal_data_mod.emit('\t'.join(self._data[index.row()]))
                 return True
         else:
             return False

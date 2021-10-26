@@ -43,15 +43,19 @@ class PhMainWidget(QWidget):
         self.wev.load(QUrl('https://www.baidu.com/s?wd=' + msg))
 
     def isAdmin(self):
-        conf = PhAppConfig()
-        return self.getConf()['scope'] == '*'
+        return PhAppConfig().getConf()['scope'] == '*'
 
     def isTmpUser(self):
         return ~self.isAdmin()
 
-    def on_data_modify(self, index):
+    def on_data_modify(self, value):
+        # 1. 添加log count
+        print(PhAppConfig().getConf()['unsync_step_count'])
+        PhAppConfig().getConf()['unsync_step_count'] = PhAppConfig().getConf()['unsync_step_count'] + 1
+        PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
+        # 2. 添加operation log
+        PhLogging().opfile().info(value)
         self.tableView.verticalScrollBar().setValue(self.last_dy)
-        PhLogging().countfile().info(1)
 
     def on_vertical_scrolled(self, dy):
         self.last_dy = self.current_dy
