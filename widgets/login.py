@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5.QtWidgets import QMessageBox
+
+from helpers.phLogging import PhLogging
 from ui.login import Ui_Form
 from widgets.mainWidget import PhMainWidget
 import http.client
@@ -28,6 +30,9 @@ class PhLoginWidget(QWidget):
             conf.getConf()['refresh_token'] = login_result['refresh_token']
             conf.getConf()['expiresIn'] = login_result['expiresIn']
             conf.getConf()['scope'] = login_result['scope']
+            conf.getConf()['userId'] = login_result['user']['id']
+            conf.getConf()['displayName'] = login_result['user']['firstName'] + login_result['user']['lastName']
+            PhLogging().console().debug(login_result)
             self.hide()
             if self.mw is None:
                 self.mw = PhMainWidget()
