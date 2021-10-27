@@ -1,0 +1,25 @@
+CREATE TABLE prod_clean(
+`Index` Int,
+`Id` String,
+`Hospname` String,
+`Level` String,
+`Address` String,
+`lchange` String,
+`lop` String,
+`ltm` String)
+ENGINE = MergeTree()
+PRIMARY KEY `Index`;
+
+CREATE TABLE prod_partition_condi(
+`uid` String,
+`uname` String,
+`condi` String)
+ENGINE = MergeTree()
+PRIMARY KEY `uid`;
+
+INSERT INTO prod_partition_condi (uid, uname, condi) VALUES ('ed9de660-9d25-4872-b792-94b44601789d', '跃马', 'Index < 0')
+
+如果Schema变了需要做的事情
+1. update sql
+2. defined schema json
+3. delete lp_logs and count_logs
