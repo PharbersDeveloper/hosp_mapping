@@ -55,7 +55,10 @@ class PhHospModel(QAbstractTableModel):
         return int(section + 1)
 
     def flags(self, index):
-        return super(PhHospModel, self).flags(index) | Qt.ItemIsEditable
+        flags = super(PhHospModel, self).flags(index)
+        if index.column() == self._headers.index('lchange'):
+            flags = flags | Qt.ItemIsEditable
+        return flags
 
     def setData(self, index, value, role=Qt.EditRole):
         # 编辑后更新模型中的数据 View中编辑后，View会调用这个方法修改Model中的数据

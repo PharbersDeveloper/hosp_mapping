@@ -105,7 +105,7 @@ class PhMainWidget(QWidget):
             return
 
         # 2. construct insert SQL
-        ist_sql = "insert into prod_clean(Index, Id, Hospname, Level, Address, lop, ltm) VALUES "
+        ist_sql = "insert into prod_clean(Index, Id, Hospname, Level, Address, lchange, lop, ltm) VALUES "
         item_insert_lst = []
         for item in PhAppConfig().getConf()['unsync_steps']:
             tmp_sql = "("
@@ -191,6 +191,7 @@ class PhMainWidget(QWidget):
         tmp = item['Index']
         steps_index = [index for index, f in enumerate(steps) if f[0] == tmp]
         if len(steps_index) == 0:
-            return [item['Index'], item['Id'], item['Hospname'], item['Level'], item['Address'], item['lop'], item['ltm']]
+            return [item['Index'], item['Id'], item['Hospname'], item['Level'],
+                    item['Address'], item['lchange'], item['lop'], item['ltm']]
         else:
             return steps[steps_index[0]]
