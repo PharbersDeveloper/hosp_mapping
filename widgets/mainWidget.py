@@ -141,7 +141,16 @@ class PhMainWidget(QWidget):
 
     def on_candi_btn_clicked(self):
         dlg = PhQueryCandiDlg()
+        dlg.signal_change_candi.connect(self.on_condi_change)
         dlg.exec()
+
+    def on_condi_change(self):
+        if not self.updataDBQuery(PhSQLQueryBuilder().deleteAllCandi()):
+            PhLogging().console().fatal('错误，请联系管理员')
+            return
+        if not self.updataDBQuery(PhSQLQueryBuilder().alterAllCandi()):
+            PhLogging().console().fatal('错误，请联系管理员')
+            return
 
     def updataDBQuery(self, sql):
         parameters = {

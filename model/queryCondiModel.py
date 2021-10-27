@@ -69,6 +69,7 @@ class PhQueryCondiModel(QAbstractTableModel):
                 self._data[index.row()][col] = value
                 self.endResetModel()
                 PhAppConfig().condi[index.row()][col] = value
+                PhLogging().console().debug(PhAppConfig().condi)
                 return True
         else:
             return False

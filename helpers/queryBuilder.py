@@ -54,3 +54,23 @@ class PhSQLQueryBuilder(object):
             return "select * from prod_partition_condi where uid='" + PhAppConfig().getConf()['userId'] + "';"
         else:
             return "select * from prod_partition_condi;"
+
+    def deleteAllCandi(self):
+        return "alter table prod_partition_condi delete where uid !=''"
+
+    def alterAllCandi(self):
+        ist_sql = "insert into prod_partition_condi (uid, uname, condi) VALUES "
+        item_insert_lst = []
+        for item in PhAppConfig().condi:
+            tmp_sql = "("
+            for i, tmp in enumerate(item):
+                if i == 0:
+                    tmp_sql = tmp_sql + "'" + tmp + "'"
+                else:
+                    tmp_sql = tmp_sql + ","
+                    tmp_sql = tmp_sql + "'" + tmp + "'"
+            tmp_sql = tmp_sql + ")"
+            item_insert_lst.append(tmp_sql)
+        ist_sql = ist_sql + ','.join(item_insert_lst) + ';'
+        PhLogging().console().debug(ist_sql)
+        return ist_sql
