@@ -1,5 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5.QtWidgets import QMessageBox
+
+from helpers.phLogging import PhLogging
+from helpers.queryBuilder import PhSQLQueryBuilder
 from ui.login import Ui_Form
 from widgets.mainWidget import PhMainWidget
 import http.client
@@ -28,9 +31,26 @@ class PhLoginWidget(QWidget):
             conf.getConf()['refresh_token'] = login_result['refresh_token']
             conf.getConf()['expiresIn'] = login_result['expiresIn']
             conf.getConf()['scope'] = login_result['scope']
+            conf.getConf()['userId'] = login_result['user']['id']
+            conf.getConf()['displayName'] = login_result['user']['firstName'] + login_result['user']['lastName']
+            PhLogging().console().debug(login_result)
+
+            last_login_user = PhAppConfig().getConf()['last_login_user']
+            if (last_login_user is not None) and (last_login_user != conf.getConf()['userId']):
+                if QMessageBox.question(self, "提问", "这次登录与上次登录的用户不一致，如果继续将丢失上个用户未同步的操作信息",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+                    PhAppConfig().getConf()['unsync_step_count'] = 0
+                    PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
+                    PhAppConfig().getConf()['unsync_steps'] = []
+                else:
+                    return
+
+            PhLogging().userfile().info(PhAppConfig().getConf()['userId'])
+            self.appPrepareQueryCondi()
             self.hide()
             if self.mw is None:
                 self.mw = PhMainWidget()
+                self.mw.user_logout.connect(self.on_user_logout_event)
             self.mw.showMaximized()
         else:
             dlg = QMessageBox(self)
@@ -60,3 +80,47 @@ class PhLoginWidget(QWidget):
 
         conn.close()
         return result
+
+    def appPrepareQueryCondi(self):
+        parameters = {
+            'query': PhSQLQueryBuilder().queryCondiSQL(),
+            'schema': PhAppConfig().getConf()['condi_schema']
+        }
+        PhLogging().console().debug(parameters)
+        conf = PhAppConfig()
+        conn = http.client.HTTPSConnection("api.pharbers.com")
+        payload = json.dumps(parameters)
+        headers = {
+            'Authorization': conf.getConf()['access_token'],
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
+        conn.request("POST", "/phchproxyquery", payload, headers)
+        res = conn.getresponse()
+
+        if (res.status == 200) & (res.reason == 'OK'):
+            login_data = res.read().decode('utf-8')
+            result = json.loads(login_data)
+            conn.close()
+            PhAppConfig().condi = list(map(self.serverCondiAdapter, result))
+            PhLogging().console().debug(PhAppConfig().condi)
+            if PhAppConfig().isTmpUser():
+                PhSQLQueryBuilder().filters.append(PhAppConfig().condi[0][2])
+        else:
+            error = res.read().decode('utf-8')
+            PhLogging().console().debug(error)
+            conn.close()
+
+    def on_user_logout_event(self):
+        # PhAppConfig().configClear()
+        PhSQLQueryBuilder().filters = []
+        self.mw.hide()
+        self.mw.deleteLater()
+        self.mw = None
+        self.ui.userLineEdit.setText('')
+        self.ui.pwdLineEdit.setText('')
+        self.show()
+
+    def serverCondiAdapter(self, item):
+        return [item['uid'], item['uname'], item['condi']]
+

@@ -5,17 +5,16 @@ from helpers.appConfig import PhAppConfig
 from helpers.phLogging import PhLogging
 
 
-class PhHospModel(QAbstractTableModel):
+class PhQueryCondiModel(QAbstractTableModel):
     signal_data_mod = pyqtSignal(str)
     signal_no_data = pyqtSignal()
     """
     表格数据模型MVC模式
     """
     def __init__(self):
-        super(PhHospModel, self).__init__()
-        self._headers = PhAppConfig().getConf()['defined_schema']
+        super(PhQueryCondiModel, self).__init__()
+        self._headers = PhAppConfig().getConf()['condi_schema']
         self._data = []
-        # self.updateData(self.refreshQueryData())
 
     def updateData(self, data):
         """
@@ -23,8 +22,6 @@ class PhHospModel(QAbstractTableModel):
         """
         self.beginResetModel()
         self._data = data
-        if len(data) == 0:
-            self.signal_no_data.emit()
         self.endResetModel()
 
     def data(self, index, role=None):
@@ -57,9 +54,9 @@ class PhHospModel(QAbstractTableModel):
             return self._headers[section]
         return int(section + 1)
 
-    def flags(self, index):
-        flags = super(PhHospModel, self).flags(index)
-        if index.column() == self._headers.index('lchange'):
+    def flags(self, index: QModelIndex):
+        flags = super(PhQueryCondiModel, self).flags(index)
+        if index.column() == self._headers.index('condi'):
             flags = flags | Qt.ItemIsEditable
         return flags
 
@@ -71,7 +68,8 @@ class PhHospModel(QAbstractTableModel):
                 self.beginResetModel()
                 self._data[index.row()][col] = value
                 self.endResetModel()
-                self.signal_data_mod.emit('\t'.join(self._data[index.row()]))
+                PhAppConfig().condi[index.row()][col] = value
+                PhLogging().console().debug(PhAppConfig().condi)
                 return True
         else:
             return False

@@ -1,2 +1,6 @@
 logs/*
 *.iml
+.idea
+**/*.pyc
+model/__pycache__/hospModel.cpython-38.pyc
+*.pyc
