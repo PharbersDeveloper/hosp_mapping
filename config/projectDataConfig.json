@@ -1,5 +1,8 @@
 {
     "schema": [
         "Index", "Id", "Hospname", "Level", "Address", "lchange", "lop", "ltm"
+    ],
+    "condi_schema": [
+        "uid", "uname", "condi"
     ]
 }

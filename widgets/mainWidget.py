@@ -1,10 +1,11 @@
+from PyQt5 import QtGui
 from PyQt5.QtCore import QUrl
-from PyQt5.QtWidgets import QWidget, QTableView, QPushButton, QLabel
+from PyQt5.QtWidgets import QWidget, QTableView, QPushButton, QLabel, QMessageBox
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 from helpers.phLogging import PhLogging
 from model.hospModel import PhHospModel
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from helpers.appConfig import PhAppConfig
 import http.client
 import json
@@ -12,16 +13,17 @@ from helpers.queryBuilder import PhSQLQueryBuilder
 
 
 class PhMainWidget(QWidget):
+    user_logout = pyqtSignal()
     current_dy = 0
     last_dy = 0
+    show_count = 0
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.tableView = QTableView()
         model = PhHospModel()
-        # model.updateData(self.queryDatabaseData("select * from prod_clean order by Index limit 1000"))
-        model.updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
         model.signal_data_mod.connect(self.on_data_modify)
+        model.signal_no_data.connect(self.on_no_data_for_tmp_user)
         self.tableView.setModel(model)
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
 
@@ -32,15 +34,19 @@ class PhMainWidget(QWidget):
         nameLabel = QLabel(PhAppConfig().getConf()['displayName'])
 
         # 功能按钮
+        logoutBtn = QPushButton()
+        logoutBtn.setText('注销')
         upLayout = QHBoxLayout()
         synBtn = QPushButton()
         synBtn.setText('同步')
         refreshBtn = QPushButton()
         refreshBtn.setText('刷新')
         upLayout.addWidget(nameLabel)
+        upLayout.addWidget(logoutBtn)
         upLayout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
         upLayout.addWidget(refreshBtn)
         upLayout.addWidget(synBtn)
+        logoutBtn.clicked.connect(self.on_logout_btn_clicked)
         synBtn.clicked.connect(self.on_sync_btn_clicked)
         refreshBtn.clicked.connect(self.on_refresh_btn_clicked)
 
@@ -64,11 +70,6 @@ class PhMainWidget(QWidget):
     def searchWithText(self, msg):
         self.wev.load(QUrl('https://www.baidu.com/s?wd=' + msg))
 
-    def isAdmin(self):
-        return PhAppConfig().getConf()['scope'] == '*'
-
-    def isTmpUser(self):
-        return ~self.isAdmin()
 
     def on_data_modify(self, value):
         # 1. 添加log count
@@ -102,43 +103,32 @@ class PhMainWidget(QWidget):
         if len(PhAppConfig().getConf()['unsync_steps_index']) == 0:
             PhLogging().console().debug('没有需要同步的信息')
             return
-        # 1. construct delete SQL
-        del_sql = 'alter table prod_clean delete where Index in [' + \
-                  ','.join(PhAppConfig().getConf()['unsync_steps_index']) + \
-                  '];'
-        PhLogging().console().debug(del_sql)
-        if not self.updataDBQuery(del_sql):
+
+        if not self.updataDBQuery(PhSQLQueryBuilder().alertDeleteSQL()):
             PhLogging().console().fatal('错误，请联系管理员')
             return
 
-        # 2. construct insert SQL
-        ist_sql = "insert into prod_clean(Index, Id, Hospname, Level, Address, lchange, lop, ltm) VALUES "
-        item_insert_lst = []
-        for item in PhAppConfig().getConf()['unsync_steps']:
-            tmp_sql = "("
-            for i, tmp in enumerate(item):
-                if i == 0:
-                    tmp_sql = tmp_sql + tmp
-                else:
-                    tmp_sql = tmp_sql + ","
-                    tmp_sql = tmp_sql + "'" + tmp + "'"
-            tmp_sql = tmp_sql + ")"
-            item_insert_lst.append(tmp_sql)
-        ist_sql = ist_sql + ','.join(item_insert_lst) + ';'
-        PhLogging().console().debug(ist_sql)
-        if not self.updataDBQuery(ist_sql):
+        if not self.updataDBQuery(PhSQLQueryBuilder().alertInsertMultiSQL()):
             PhLogging().console().fatal('错误，请联系管理员')
             return
 
-        # 3. 清除本地操作缓存
+        # 清除本地操作缓存
         PhAppConfig().getConf()['unsync_step_count'] = 0
         PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
         PhAppConfig().getConf()['unsync_steps'] = []
 
     def on_refresh_btn_clicked(self):
         self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
-        # self.tableView.model() \
-        #     .updateData(self.queryDatabaseData("select * from prod_clean order by Index limit 1000"))
+
+    def on_logout_btn_clicked(self):
+        self.user_logout.emit()
+
+    def on_no_data_for_tmp_user(self):
+        PhLogging().console().debug('none data for temp user')
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle('没有你需要处理的数据!')
+        dlg.setText('没有你需要处理的数据，请联系你的管理员处理该情况')
+        dlg.exec()
 
     def updataDBQuery(self, sql):
         parameters = {
@@ -204,3 +194,8 @@ class PhMainWidget(QWidget):
                     item['Address'], item['lchange'], item['lop'], item['ltm']]
         else:
             return steps[steps_index[0]]
+
+    def showEvent(self, a0: QtGui.QShowEvent):
+        if self.show_count == 0:
+            self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
+        self.show_count = self.show_count + 1

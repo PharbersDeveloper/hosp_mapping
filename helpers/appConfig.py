@@ -5,11 +5,13 @@ import json
 
 @singleton
 class PhAppConfig(object):
+    condi = []
+
     def __init__(self):
         self.conf = {}
+        self.queryDefinedSchemas()
         self.conf['unsync_step_count'] = self.queryUnsavedStepsCound()
         self.conf['unsync_steps'] = self.queryUnsavedSteps()
-        self.conf['defined_schema'] = self.queryDefineSchema()
         self.conf['last_login_user'] = self.queryLastLoginUser()
 
     def getConf(self):
@@ -42,10 +44,11 @@ class PhAppConfig(object):
             self.conf['unsync_steps_index'] = tmp
             return result
 
-    def queryDefineSchema(self):
+    def queryDefinedSchemas(self):
         f = open('./config/projectDataConfig.json')
         tmp = json.loads(f.read(1024))
-        return tmp['schema']
+        self.conf['defined_schema'] = tmp['schema']
+        self.conf['condi_schema'] = tmp['condi_schema']
 
     def queryLastLoginUser(self):
         if not os.path.exists('./logs/user_logs.out'):
@@ -56,3 +59,13 @@ class PhAppConfig(object):
                 return None
             else:
                 return tails[0]
+
+    def configClear(self):
+        self.condi = []
+        self.conf = {}
+
+    def isAdmin(self):
+        return self.getConf()['scope'] == '*'
+
+    def isTmpUser(self):
+        return ~self.isAdmin()
