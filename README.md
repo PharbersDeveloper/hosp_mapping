@@ -42,3 +42,13 @@ Preferences -> Tools -> External Tools
 2. .ui 文件 编译成 .py 文件
 3. 开发
 
+## 打包流程
+
+```
+pip install pyinstaller
+pyinstaller --windowed --onefile --clean --noconfirm main.py --name phclean
+pyinstaller --clean --noconfirm --windowed --onefile phclean.spec
+
+pyinstaller --windowed -D --clean --noconfirm main.py --name phclean
+```
+
