@@ -1,5 +1,6 @@
 from PyQt5.QtCore import QUrl
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableView, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import QWidget, QTableView, QPushButton, QLabel
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 from helpers.phLogging import PhLogging
 from model.hospModel import PhHospModel
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -25,12 +26,16 @@ class PhMainWidget(QWidget):
         self.wev = QWebEngineView()
         self.wev.load(QUrl('https://www.baidu.com'))
 
-        # 同步按钮
+        # 用户信息
+        nameLabel = QLabel(PhAppConfig().getConf()['displayName'])
+
+        # 功能按钮
         upLayout = QHBoxLayout()
         synBtn = QPushButton()
         synBtn.setText('同步')
         refreshBtn = QPushButton()
         refreshBtn.setText('刷新')
+        upLayout.addWidget(nameLabel)
         upLayout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
         upLayout.addWidget(refreshBtn)
         upLayout.addWidget(synBtn)
@@ -164,6 +169,7 @@ class PhMainWidget(QWidget):
             'query': sql,
             'schema': PhAppConfig().getConf()['defined_schema']
         }
+        PhLogging().console().debug(parameters)
         conf = PhAppConfig()
         conn = http.client.HTTPSConnection("api.pharbers.com")
         payload = json.dumps(parameters)
@@ -181,7 +187,7 @@ class PhMainWidget(QWidget):
             conn.close()
             return list(map(self.serverDataAdapter, result))
         else:
-            error = {'message': 'query db error'}
+            error = res.read().decode('utf-8')
             PhLogging().console().debug(error)
             conn.close()
             return error

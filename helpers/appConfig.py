@@ -10,6 +10,7 @@ class PhAppConfig(object):
         self.conf['unsync_step_count'] = self.queryUnsavedStepsCound()
         self.conf['unsync_steps'] = self.queryUnsavedSteps()
         self.conf['defined_schema'] = self.queryDefineSchema()
+        self.conf['last_login_user'] = self.queryLastLoginUser()
 
     def getConf(self):
         return self.conf
@@ -45,3 +46,13 @@ class PhAppConfig(object):
         f = open('./config/projectDataConfig.json')
         tmp = json.loads(f.read(1024))
         return tmp['schema']
+
+    def queryLastLoginUser(self):
+        if not os.path.exists('./logs/user_logs.out'):
+            return None
+        else:
+            tails = tailer.tail(open('./logs/user_logs.out'), 1)
+            if len(tails) == 0:
+                return None
+            else:
+                return tails[0]

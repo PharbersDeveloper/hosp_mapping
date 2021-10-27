@@ -33,6 +33,18 @@ class PhLoginWidget(QWidget):
             conf.getConf()['userId'] = login_result['user']['id']
             conf.getConf()['displayName'] = login_result['user']['firstName'] + login_result['user']['lastName']
             PhLogging().console().debug(login_result)
+
+            last_login_user = PhAppConfig().getConf()['last_login_user']
+            if (last_login_user is not None) and (last_login_user is not conf.getConf()['userId']):
+                if QMessageBox.question(self, "提问", "这次登录与上次登录的用户不一致，如果继续将丢失上个用户未同步的操作信息",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+                    PhAppConfig().getConf()['unsync_step_count'] = 0
+                    PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
+                    PhAppConfig().getConf()['unsync_steps'] = []
+                else:
+                    return
+
+            PhLogging().userfile().info(PhAppConfig().getConf()['userId'])
             self.hide()
             if self.mw is None:
                 self.mw = PhMainWidget()
