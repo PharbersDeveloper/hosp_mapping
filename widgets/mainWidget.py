@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt
 from helpers.appConfig import PhAppConfig
 import http.client
 import json
+from helpers.queryBuilder import PhSQLQueryBuilder
 
 
 class PhMainWidget(QWidget):
@@ -18,7 +19,8 @@ class PhMainWidget(QWidget):
 
         self.tableView = QTableView()
         model = PhHospModel()
-        model.updateData(self.queryDatabaseData("select * from prod_clean order by Index limit 1000"))
+        # model.updateData(self.queryDatabaseData("select * from prod_clean order by Index limit 1000"))
+        model.updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
         model.signal_data_mod.connect(self.on_data_modify)
         self.tableView.setModel(model)
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
@@ -134,8 +136,9 @@ class PhMainWidget(QWidget):
         PhAppConfig().getConf()['unsync_steps'] = []
 
     def on_refresh_btn_clicked(self):
-        self.tableView.model() \
-            .updateData(self.queryDatabaseData("select * from prod_clean order by Index limit 1000"))
+        self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
+        # self.tableView.model() \
+        #     .updateData(self.queryDatabaseData("select * from prod_clean order by Index limit 1000"))
 
     def updataDBQuery(self, sql):
         parameters = {
