@@ -10,6 +10,7 @@ from helpers.appConfig import PhAppConfig
 import http.client
 import json
 from helpers.queryBuilder import PhSQLQueryBuilder
+from widgets.dialogs.queryCondiDlg import PhQueryCandiDlg
 
 
 class PhMainWidget(QWidget):
@@ -41,12 +42,20 @@ class PhMainWidget(QWidget):
         synBtn.setText('同步')
         refreshBtn = QPushButton()
         refreshBtn.setText('刷新')
+        candiBtn = QPushButton()
+        candiBtn.setText('任务分配')
+
+        if PhAppConfig().isTmpUser():
+            candiBtn.setEnabled(False)
+
         upLayout.addWidget(nameLabel)
         upLayout.addWidget(logoutBtn)
         upLayout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        upLayout.addWidget(candiBtn)
         upLayout.addWidget(refreshBtn)
         upLayout.addWidget(synBtn)
         logoutBtn.clicked.connect(self.on_logout_btn_clicked)
+        candiBtn.clicked.connect(self.on_candi_btn_clicked)
         synBtn.clicked.connect(self.on_sync_btn_clicked)
         refreshBtn.clicked.connect(self.on_refresh_btn_clicked)
 
@@ -128,6 +137,10 @@ class PhMainWidget(QWidget):
         dlg = QMessageBox(self)
         dlg.setWindowTitle('没有你需要处理的数据!')
         dlg.setText('没有你需要处理的数据，请联系你的管理员处理该情况')
+        dlg.exec()
+
+    def on_candi_btn_clicked(self):
+        dlg = PhQueryCandiDlg()
         dlg.exec()
 
     def updataDBQuery(self, sql):

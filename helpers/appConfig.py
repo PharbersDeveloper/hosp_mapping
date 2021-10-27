@@ -68,4 +68,4 @@ class PhAppConfig(object):
         return self.getConf()['scope'] == '*'
 
     def isTmpUser(self):
-        return ~self.isAdmin()
+        return not self.isAdmin()

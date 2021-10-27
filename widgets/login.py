@@ -112,9 +112,11 @@ class PhLoginWidget(QWidget):
             conn.close()
 
     def on_user_logout_event(self):
-        PhAppConfig().configClear()
+        # PhAppConfig().configClear()
+        PhSQLQueryBuilder().filters = []
         self.mw.hide()
         self.mw.deleteLater()
+        self.mw = None
         self.ui.userLineEdit.setText('')
         self.ui.pwdLineEdit.setText('')
         self.show()
