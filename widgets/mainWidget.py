@@ -70,6 +70,15 @@ class PhMainWidget(QWidget):
         PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
         # 2. 添加operation log
         PhLogging().opfile().info(value)
+        # 3. 同步内存缓存数据
+        tmp = value.split('\t')
+        try:
+            idx = PhAppConfig().getConf()['unsync_steps_index'].index(tmp[0])
+            PhAppConfig().getConf()['unsync_steps'][idx] = tmp
+        except Exception:
+            PhAppConfig().getConf()['unsync_steps_index'].append(tmp[0])
+            PhAppConfig().getConf()['unsync_steps'].append(tmp)
+
         # 3. 固定滚动条
         self.tableView.verticalScrollBar().setValue(self.last_dy)
 
@@ -117,6 +126,7 @@ class PhMainWidget(QWidget):
         # 3. 清除本地操作缓存
         PhAppConfig().getConf()['unsync_step_count'] = 0
         PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
+        PhAppConfig().getConf()['unsync_steps'] = []
 
     def on_refresh_btn_clicked(self):
         self.tableView.model() \
