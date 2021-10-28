@@ -137,7 +137,7 @@ class PhMainWidget(QWidget):
         PhAppConfig().getConf()['unsync_steps'] = []
         PhAppConfig().getConf()['unsync_steps_index'] = []
 
-        QMessageBox.information(self, "同步成功", "同步数据成功").exec()
+        QMessageBox.information(self, "同步成功", "同步数据成功")
 
     def on_refresh_btn_clicked(self):
         self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
