@@ -74,3 +74,9 @@ class PhSQLQueryBuilder(object):
         ist_sql = ist_sql + ','.join(item_insert_lst) + ';'
         PhLogging().console().debug(ist_sql)
         return ist_sql
+
+    def queryTotalCountSQL(self):
+        return "select count(*) from prod_clean"
+
+    def queryProgressCountSQL(self):
+        return "select count(*) from prod_clean where lchange=''"
