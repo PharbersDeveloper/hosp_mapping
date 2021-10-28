@@ -37,7 +37,7 @@ class PhAppConfig(object):
             tails = self.filterEmpty(tailer.tail(open('./logs/op_logs.out', encoding='unicode_escape'), self.conf['unsync_step_count']))
             tails.reverse()
             # tails = tails[1:]
-            tails = list(map(lambda x: x.split('\t'), tails))
+            tails = list(map(lambda x: x.encode('unicode_escape').decode('utf-8').split('\t'), tails))
             tmp = []
             result = []
             for item in tails:
@@ -57,7 +57,7 @@ class PhAppConfig(object):
         if not os.path.exists('./logs/user_logs.out'):
             return None
         else:
-            tails = self.filterEmpty(tailer.tail(open('./logs/user_logs.out', encoding='unicode_escape'), 1))
+            tails = self.filterEmpty(tailer.tail(open('./logs/user_logs.out'), 1))
             tails.reverse()
             if len(tails) == 0:
                 return None
