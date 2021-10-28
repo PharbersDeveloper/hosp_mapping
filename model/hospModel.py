@@ -2,6 +2,7 @@ from PyQt5.QtCore import Qt, QAbstractTableModel, pyqtSignal, QModelIndex
 import http.client
 import json
 from helpers.appConfig import PhAppConfig
+import datetime
 from helpers.phLogging import PhLogging
 
 
@@ -70,6 +71,8 @@ class PhHospModel(QAbstractTableModel):
             if 0 < col < len(self._headers):
                 self.beginResetModel()
                 self._data[index.row()][col] = value
+                self._data[index.row()][col + 1] = PhAppConfig().getConf()['displayName']
+                self._data[index.row()][col + 2] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.endResetModel()
                 self.signal_data_mod.emit('\t'.join(self._data[index.row()]))
                 return True
