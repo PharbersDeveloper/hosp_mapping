@@ -1,3 +1,5 @@
+# -*- coding:utf-8 -*-
+
 from helpers.singleton import singleton
 import tailer
 import os
@@ -31,7 +33,7 @@ class PhAppConfig(object):
         if not os.path.exists('./logs/op_logs.out'):
             return []
         else:
-            tails = self.filterEmpty(tailer.tail(open('./logs/op_logs.out'), self.conf['unsync_step_count']))
+            tails = self.filterEmpty(tailer.tail(open('./logs/op_logs.out', encoding='unicode_escape'), self.conf['unsync_step_count']))
             tails.reverse()
             # tails = tails[1:]
             tails = list(map(lambda x: x.split('\t'), tails))

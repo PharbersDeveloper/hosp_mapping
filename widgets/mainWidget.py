@@ -117,10 +117,12 @@ class PhMainWidget(QWidget):
 
         if not self.updataDBQuery(PhSQLQueryBuilder().alertDeleteSQL()):
             PhLogging().console().fatal('错误，请联系管理员')
+            QMessageBox.critical(self, "同步错误", "同步错误，请联系管理员").exec()
             return
 
         if not self.updataDBQuery(PhSQLQueryBuilder().alertInsertMultiSQL()):
             PhLogging().console().fatal('错误，请联系管理员')
+            QMessageBox.critical(self, "同步错误", "同步错误，请联系管理员").exec()
             return
 
         # 清除本地操作缓存
@@ -128,6 +130,8 @@ class PhMainWidget(QWidget):
         PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
         PhAppConfig().getConf()['unsync_steps'] = []
         PhAppConfig().getConf()['unsync_steps_index'] = []
+
+        QMessageBox.information(self, "同步成功", "同步数据成功").exec()
 
     def on_refresh_btn_clicked(self):
         self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
