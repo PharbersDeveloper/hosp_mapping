@@ -123,12 +123,12 @@ class PhMainWidget(QWidget):
 
         if not self.updataDBQuery(PhSQLQueryBuilder().alertDeleteSQL()):
             PhLogging().console().fatal('错误，请联系管理员')
-            QMessageBox.critical(self, "同步错误", "同步错误，请联系管理员").exec()
+            QMessageBox.critical(self, "同步错误", "同步错误，请联系管理员")
             return
 
         if not self.updataDBQuery(PhSQLQueryBuilder().alertInsertMultiSQL()):
             PhLogging().console().fatal('错误，请联系管理员')
-            QMessageBox.critical(self, "同步错误", "同步错误，请联系管理员").exec()
+            QMessageBox.critical(self, "同步错误", "同步错误，请联系管理员")
             return
 
         # 清除本地操作缓存
