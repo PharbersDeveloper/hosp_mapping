@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QApplication
+from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QMessageBox
 
 from helpers.phLogging import PhLogging
@@ -42,6 +42,7 @@ class PhLoginWidget(QWidget):
                     PhAppConfig().getConf()['unsync_step_count'] = 0
                     PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
                     PhAppConfig().getConf()['unsync_steps'] = []
+                    PhAppConfig().getConf()['unsync_steps_index'] = []
                 else:
                     return
 
