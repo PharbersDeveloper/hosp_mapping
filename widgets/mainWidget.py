@@ -143,7 +143,7 @@ class PhMainWidget(QWidget):
         PhLogging().console().debug('none data for temp user')
         dlg = QMessageBox(self)
         dlg.setWindowTitle('没有你需要处理的数据!')
-        dlg.setText('没有你需要处理的数据，请联系你的管理员处理该情况')
+        dlg.setText('没有你需要处理的数据，或者管理员分配语句出错，请联系你的管理员处理该情况')
         dlg.exec()
 
     def on_candi_btn_clicked(self):
@@ -212,7 +212,7 @@ class PhMainWidget(QWidget):
             error = res.read().decode('utf-8')
             PhLogging().console().debug(error)
             conn.close()
-            return error
+            return []
 
     def serverDataAdapter(self, item):
         steps = PhAppConfig().getConf()['unsync_steps']
