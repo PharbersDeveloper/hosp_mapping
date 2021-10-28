@@ -21,7 +21,7 @@ class PhAppConfig(object):
         if not os.path.exists('./logs/count_logs.out'):
             return 0
         else:
-            tails = tailer.tail(open('./logs/count_logs.out'), 1)
+            tails = self.filterEmpty(tailer.tail(open('./logs/count_logs.out'), 1))
             if len(tails) == 0:
                 return 0
             else:
@@ -31,7 +31,7 @@ class PhAppConfig(object):
         if not os.path.exists('./logs/op_logs.out'):
             return []
         else:
-            tails = tailer.tail(open('./logs/op_logs.out'), self.conf['unsync_step_count'])
+            tails = self.filterEmpty(tailer.tail(open('./logs/op_logs.out'), self.conf['unsync_step_count']))
             tails.reverse()
             tails = tails[1:]
             tails = list(map(lambda x: x.split('\t'), tails))
@@ -54,7 +54,7 @@ class PhAppConfig(object):
         if not os.path.exists('./logs/user_logs.out'):
             return None
         else:
-            tails = tailer.tail(open('./logs/user_logs.out'), 1)
+            tails = self.filterEmpty(tailer.tail(open('./logs/user_logs.out'), 1))
             if len(tails) == 0:
                 return None
             else:
@@ -69,3 +69,6 @@ class PhAppConfig(object):
 
     def isTmpUser(self):
         return not self.isAdmin()
+
+    def filterEmpty(self, lst):
+        return list(filter(lambda x: x != '', lst))
