@@ -36,6 +36,8 @@ class PhLoginWidget(QWidget):
             PhLogging().console().debug(login_result)
 
             last_login_user = PhAppConfig().getConf()['last_login_user']
+            PhLogging().console().debug(last_login_user)
+            PhLogging().console().debug(conf.getConf()['userId'])
             if (last_login_user is not None) and (last_login_user != conf.getConf()['userId']):
                 if QMessageBox.question(self, "提问", "这次登录与上次登录的用户不一致，如果继续将丢失上个用户未同步的操作信息",
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
