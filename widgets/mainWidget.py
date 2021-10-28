@@ -11,6 +11,7 @@ import http.client
 import json
 from helpers.queryBuilder import PhSQLQueryBuilder
 from widgets.dialogs.queryCondiDlg import PhQueryCandiDlg
+from widgets.progressLabel import PhProgressLabel
 
 
 class PhMainWidget(QWidget):
@@ -51,6 +52,11 @@ class PhMainWidget(QWidget):
 
         upLayout.addWidget(nameLabel)
         upLayout.addWidget(logoutBtn)
+
+        if PhAppConfig().isAdmin():
+            progressLabel = PhProgressLabel()
+            upLayout.addWidget(progressLabel)
+
         upLayout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
         upLayout.addWidget(candiBtn)
         upLayout.addWidget(refreshBtn)
