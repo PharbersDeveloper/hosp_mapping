@@ -33,7 +33,7 @@ class PhAppConfig(object):
         else:
             tails = self.filterEmpty(tailer.tail(open('./logs/op_logs.out'), self.conf['unsync_step_count']))
             tails.reverse()
-            tails = tails[1:]
+            # tails = tails[1:]
             tails = list(map(lambda x: x.split('\t'), tails))
             tmp = []
             result = []
