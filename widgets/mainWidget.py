@@ -29,7 +29,8 @@ class PhMainWidget(QWidget):
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
 
         self.wev = QWebEngineView()
-        self.wev.load(QUrl('https://www.baidu.com'))
+        # self.wev.load(QUrl('https://www.baidu.com'))
+        self.wev.load(QUrl('https://cn.bing.com'))
 
         # 用户信息
         nameLabel = QLabel(PhAppConfig().getConf()['displayName'])
@@ -77,7 +78,8 @@ class PhMainWidget(QWidget):
             handler(select)
 
     def searchWithText(self, msg):
-        self.wev.load(QUrl('https://www.baidu.com/s?wd=' + msg))
+        # self.wev.load(QUrl('https://www.baidu.com/s?wd=' + msg))
+        self.wev.load(QUrl('https://cn.bing.com/search?q=' + msg))
 
 
     def on_data_modify(self, value):
@@ -125,6 +127,7 @@ class PhMainWidget(QWidget):
         PhAppConfig().getConf()['unsync_step_count'] = 0
         PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
         PhAppConfig().getConf()['unsync_steps'] = []
+        PhAppConfig().getConf()['unsync_steps_index'] = []
 
     def on_refresh_btn_clicked(self):
         self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))

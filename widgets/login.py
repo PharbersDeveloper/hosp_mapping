@@ -42,6 +42,7 @@ class PhLoginWidget(QWidget):
                     PhAppConfig().getConf()['unsync_step_count'] = 0
                     PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
                     PhAppConfig().getConf()['unsync_steps'] = []
+                    PhAppConfig().getConf()['unsync_steps_index'] = []
                 else:
                     return
 
