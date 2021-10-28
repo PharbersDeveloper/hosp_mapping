@@ -24,6 +24,7 @@ class PhAppConfig(object):
             return 0
         else:
             tails = self.filterEmpty(tailer.tail(open('./logs/count_logs.out'), 1))
+            tails.reverse()
             if len(tails) == 0:
                 return 0
             else:
@@ -56,7 +57,8 @@ class PhAppConfig(object):
         if not os.path.exists('./logs/user_logs.out'):
             return None
         else:
-            tails = self.filterEmpty(tailer.tail(open('./logs/user_logs.out'), 1))
+            tails = self.filterEmpty(tailer.tail(open('./logs/user_logs.out', encoding='unicode_escape'), 1))
+            tails.reverse()
             if len(tails) == 0:
                 return None
             else:
