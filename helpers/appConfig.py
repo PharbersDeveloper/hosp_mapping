@@ -5,6 +5,7 @@ import tailer
 import os
 import json
 import sqlite3
+import uuid
 
 @singleton
 class PhAppConfig(object):
@@ -14,7 +15,7 @@ class PhAppConfig(object):
         self.conf = {}
         self.queryDefinedSchemas()
         self.cx = sqlite3.connect('./logs/operations.db')
-        self.cx.execute("create table if not exists clean_operations ( Idx INT PRIMARY KEY,Id TEXT,Hospname TEXT,Level TEXT,Address TEXT,lchange TEXT,lop TEXT,ltm TEXT );")
+        self.cx.execute("create table if not exists clean_operations ( Idx INT,Id TEXT,Hospname TEXT,Level TEXT,Address TEXT,lchange TEXT,lop TEXT,ltm TEXT, TMPID TEXT PRIMARY KEY);")
         self.cur = self.cx.cursor()
         self.conf['unsync_step_count'] = self.queryUnsavedStepsCound()
         self.conf['unsync_steps'] = self.queryUnsavedSteps()
@@ -37,7 +38,7 @@ class PhAppConfig(object):
     def queryUnsavedSteps(self):
         PhLogging().console().debug('loading unsaved steps')
         self.conf['unsync_steps_index'] = []
-        self.cur.execute("select * from clean_operations order by ltm DESC limit " + str(self.conf['unsync_step_count']))
+        self.cur.execute("select Idx, Id, Hospname, Level, Address, lchange, lop, ltm from clean_operations order by ltm DESC limit " + str(self.conf['unsync_step_count']))
         tails = self.cur.fetchall()
         tmp = []
         result = []
@@ -50,14 +51,14 @@ class PhAppConfig(object):
 
     def pushUnsavedStep(self, value):
         PhLogging().console().debug(value)
-        tmp_sql = "insert into clean_operations (Idx, Id, Hospname, Level, Address, lchange, lop, ltm) VALUES ("
+        tmp_sql = "insert into clean_operations (Idx, Id, Hospname, Level, Address, lchange, lop, ltm, TMPID) VALUES ("
         for i, tmp in enumerate(value.split('\t')):
             if i == 0:
                 tmp_sql = tmp_sql + tmp
             else:
                 tmp_sql = tmp_sql + ","
                 tmp_sql = tmp_sql + "'" + tmp + "'"
-        tmp_sql = tmp_sql + ")"
+        tmp_sql = tmp_sql + "," + "'" + str(uuid.uuid4()) + "'" + ");"
         PhLogging().console().debug(tmp_sql)
         self.cur.execute(tmp_sql)
         self.cx.commit()
