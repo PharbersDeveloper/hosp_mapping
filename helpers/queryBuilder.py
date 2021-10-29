@@ -39,7 +39,7 @@ class PhSQLQueryBuilder(object):
             tmp_sql = "("
             for i, tmp in enumerate(item):
                 if i == 0:
-                    tmp_sql = tmp_sql + tmp
+                    tmp_sql = tmp_sql + str(tmp)
                 else:
                     tmp_sql = tmp_sql + ","
                     tmp_sql = tmp_sql + "'" + tmp + "'"

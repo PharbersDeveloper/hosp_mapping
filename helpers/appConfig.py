@@ -43,8 +43,8 @@ class PhAppConfig(object):
         result = []
         for item in tails:
             if item[0] not in tmp:
-                tmp.append(item[0])
-                result.append(item)
+                tmp.append(str(item[0]))
+                result.append(list(item))
         self.conf['unsync_steps_index'] = tmp
         return result
 
@@ -59,7 +59,7 @@ class PhAppConfig(object):
                 tmp_sql = tmp_sql + "'" + tmp + "'"
         tmp_sql = tmp_sql + ")"
         PhLogging().console().debug(tmp_sql)
-        self.cx.execute(tmp_sql)
+        self.cur.execute(tmp_sql)
         self.cx.commit()
 
     def queryDefinedSchemas(self):
