@@ -5,3 +5,4 @@ logs*
 *.pyc
 build
 dist
+appName.app.lock
