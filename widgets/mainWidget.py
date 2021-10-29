@@ -94,7 +94,9 @@ class PhMainWidget(QWidget):
         PhAppConfig().getConf()['unsync_step_count'] = PhAppConfig().getConf()['unsync_step_count'] + 1
         PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
         # 2. 添加operation log
-        PhLogging().opfile().info(value)
+        # 修改一下，先插入到db中
+        # PhLogging().opfile().info(value)
+        PhAppConfig().pushUnsavedStep(value)
         # 3. 同步内存缓存数据
         tmp = value.split('\t')
         try:
