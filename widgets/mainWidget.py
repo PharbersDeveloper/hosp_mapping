@@ -121,6 +121,7 @@ class PhMainWidget(QWidget):
         # 如果多人同时同步，可能会有些许问题
         if len(PhAppConfig().getConf()['unsync_steps_index']) == 0:
             PhLogging().console().debug('没有需要同步的信息')
+            QMessageBox.information(self, "同步成功", "同步数据成功")
             return
 
         if not self.updataDBQuery(PhSQLQueryBuilder().alertDeleteSQL()):
