@@ -15,9 +15,6 @@ class PhSQLQueryBuilder(object):
     condi_table = ''
 
     def __init__(self):
-        pass
-        # self.tableName = 'prod_clean'
-        # self.condi_table = 'prod_partition_condi'
         self.sorts = 'Index'
 
     def querySelectSQL(self):
@@ -52,9 +49,9 @@ class PhSQLQueryBuilder(object):
         PhLogging().console().debug(ist_sql)
         return ist_sql
 
-    def queryCondiSQL(self):
+    def queryCondiSQL(self, uid):
         if PhAppConfig().getConf()['scope'] != '*':
-            return "select * from prod_partition_condi where uid='" + PhAppConfig().getConf()['userId'] + "';"
+            return "select * from prod_partition_condi where uid='" + uid + "';"
         else:
             return "select * from prod_partition_condi;"
 
@@ -95,7 +92,7 @@ class PhSQLQueryBuilder(object):
 
     def local_queryUnsavedEdit(self):
         sql = "select " + ",".join(PhAppConfig().getConf()['defined_schema']) + \
-            " from clean_operations order by ltm DESC limit " + str(PhAppConfig().getConf()['unsync_step_count'])
+            " from clean_operations order by ltm DESC " # + str(PhLocalStorage().getStorage()['unsync_step_count'])
         sql = sql.replace("Index", "Idx", 1)
         PhLogging().console().debug(sql)
         return sql
@@ -114,3 +111,27 @@ class PhSQLQueryBuilder(object):
         tmp_sql = tmp_sql.replace("Index", "Idx", 1)
         PhLogging().console().debug(tmp_sql)
         return tmp_sql
+
+    def local_clearUnsavedEidt(self):
+        return "delete from clean_operations WHERE TMPID!='';"
+
+    def local_queryUnsavedCount(self):
+        return "select count(*) from clean_operations WHERE TMPID!='';"
+
+    def local_createLastLoginUser(self):
+        create_sql = "create table if not exists last_user ( uid TEXT, id INT PRIMARY KEY)"
+        PhLogging().console().debug(create_sql)
+        return create_sql
+
+    def local_queryLastLoginUser(self):
+        sql = "select uid from last_user where id=1"
+        PhLogging().console().debug(sql)
+        return sql
+
+    def local_pushLastLoginUser(self, uid):
+        if uid == "":
+            uid = str(uuid.uuid4())
+
+        sql = "insert or replace into last_user ( uid, id ) VALUES ( '" + uid + "', 1);"
+        PhLogging().console().debug(sql)
+        return sql

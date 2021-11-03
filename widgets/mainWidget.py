@@ -92,9 +92,9 @@ class PhMainWidget(QWidget):
 
     def on_data_modify(self, value):
         # 1. 添加log count
-        print(PhAppConfig().getConf()['unsync_step_count'])
-        PhAppConfig().getConf()['unsync_step_count'] = PhAppConfig().getConf()['unsync_step_count'] + 1
-        PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
+        print(PhLocalStorage().getStorage()['unsync_step_count'])
+        PhLocalStorage().getStorage()['unsync_step_count'] = PhLocalStorage().getStorage()['unsync_step_count'] + 1
+        # PhLogging().countfile().info(PhLocalStorage().getStorage()['unsync_step_count'])
         # 2. 添加operation log
         # 修改一下，先插入到db中
         # PhLogging().opfile().info(value)
@@ -137,10 +137,11 @@ class PhMainWidget(QWidget):
             return
 
         # 清除本地操作缓存
-        PhAppConfig().getConf()['unsync_step_count'] = 0
-        PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
+        PhLocalStorage().getStorage()['unsync_step_count'] = 0
+        # PhLogging().countfile().info(PhLocalStorage().getStorage()['unsync_step_count'])
         PhLocalStorage().getStorage()['unsync_steps'] = []
         PhLocalStorage().getStorage()['unsync_steps_index'] = []
+        PhLocalStorage().afterSyncUnsavedSteps()
 
         QMessageBox.information(self, "同步成功", "同步数据成功")
 

@@ -36,20 +36,23 @@ class PhLoginWidget(QWidget):
             conf.getConf()['displayName'] = login_result['user']['firstName'] + login_result['user']['lastName']
             PhLogging().console().debug(login_result)
 
-            last_login_user = PhAppConfig().getConf()['last_login_user']
+            # last_login_user = PhAppConfig().getConf()['last_login_user']
+            last_login_user = PhLocalStorage().getStorage()['last_login_user']
             PhLogging().console().debug(last_login_user)
             PhLogging().console().debug(conf.getConf()['userId'])
             if (last_login_user is not None) and (last_login_user != conf.getConf()['userId']):
                 if QMessageBox.question(self, "提问", "这次登录与上次登录的用户不一致，如果继续将丢失上个用户未同步的操作信息",
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
-                    PhAppConfig().getConf()['unsync_step_count'] = 0
-                    PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
+                    PhLocalStorage().getStorage()['unsync_step_count'] = 0
+                    # PhLogging().countfile().info(PhLocalStorage().getStorage()['unsync_step_count'])
                     PhLocalStorage().getStorage()['unsync_steps'] = []
                     PhLocalStorage().getStorage()['unsync_steps_index'] = []
+                    PhLocalStorage().afterSyncUnsavedSteps()
                 else:
                     return
 
-            PhLogging().userfile().info(PhAppConfig().getConf()['userId'])
+            # PhLogging().userfile().info(PhLocalStorage().getStorage()['userId'])
+            PhLocalStorage().pushLastLoginUser(conf.getConf()['userId'])
             self.appPrepareQueryCondi()
             self.hide()
             if self.mw is None:
@@ -87,7 +90,7 @@ class PhLoginWidget(QWidget):
 
     def appPrepareQueryCondi(self):
         parameters = {
-            'query': PhSQLQueryBuilder().queryCondiSQL(),
+            'query': PhSQLQueryBuilder().queryCondiSQL(PhAppConfig().getConf()['userId']),
             'schema': PhAppConfig().getConf()['condi_schema']
         }
         PhLogging().console().debug(parameters)
@@ -117,6 +120,7 @@ class PhLoginWidget(QWidget):
 
     def on_user_logout_event(self):
         # PhAppConfig().configClear()
+        PhLocalStorage().getStorage()['last_login_user'] = PhLocalStorage().queryLastLoginUser()
         PhSQLQueryBuilder().filters = []
         self.mw.hide()
         self.mw.deleteLater()
