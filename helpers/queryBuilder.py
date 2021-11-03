@@ -95,7 +95,7 @@ class PhSQLQueryBuilder(object):
 
     def local_queryUnsavedEdit(self):
         sql = "select " + ",".join(PhAppConfig().getConf()['defined_schema']) + \
-            " from clean_operations order by ltm DESC limit " + str(PhAppConfig().getConf()['unsync_step_count'])
+            " from clean_operations order by ltm DESC " # + str(PhLocalStorage().getStorage()['unsync_step_count'])
         sql = sql.replace("Index", "Idx", 1)
         PhLogging().console().debug(sql)
         return sql
@@ -114,3 +114,9 @@ class PhSQLQueryBuilder(object):
         tmp_sql = tmp_sql.replace("Index", "Idx", 1)
         PhLogging().console().debug(tmp_sql)
         return tmp_sql
+
+    def local_clearUnsavedEidt(self):
+        return "delete from clean_operations WHERE TMPID!='';"
+
+    def local_queryUnsavedCount(self):
+        return "select count(*) from clean_operations WHERE TMPID!='';"

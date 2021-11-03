@@ -14,6 +14,7 @@ class PhLocalStorage(object):
         self.cx = sqlite3.connect('./logs/operations.db')
         self.cx.execute(PhSQLQueryBuilder().local_createIfExist())
         self.cur = self.cx.cursor()
+        self.storage['unsync_step_count'] = self.queryUnsavedStepsCount()
         self.storage['unsync_steps'] = self.queryUnsavedSteps()
 
     # def getConf(self):
@@ -21,6 +22,12 @@ class PhLocalStorage(object):
 
     def getStorage(self):
         return self.storage
+
+    def queryUnsavedStepsCount(self):
+        PhLogging().console().debug('query unsave steps count')
+        self.cur.execute(PhSQLQueryBuilder().local_queryUnsavedCount())
+        tails = self.cur.fetchall()
+        return tails[0][0]
 
     def queryUnsavedSteps(self):
         PhLogging().console().debug('loading unsaved steps')
@@ -38,4 +45,9 @@ class PhLocalStorage(object):
 
     def pushUnsavedStep(self, value):
         self.cur.execute(PhSQLQueryBuilder().local_pushUnsavedEdit(value))
+        self.cx.commit()
+
+    def afterSyncUnsavedSteps(self):
+        PhLogging().console().debug('after sync unsaved steps')
+        self.cur.execute(PhSQLQueryBuilder().local_clearUnsavedEidt())
         self.cx.commit()
