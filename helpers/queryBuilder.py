@@ -15,9 +15,6 @@ class PhSQLQueryBuilder(object):
     condi_table = ''
 
     def __init__(self):
-        pass
-        # self.tableName = 'prod_clean'
-        # self.condi_table = 'prod_partition_condi'
         self.sorts = 'Index'
 
     def querySelectSQL(self):
@@ -54,7 +51,7 @@ class PhSQLQueryBuilder(object):
 
     def queryCondiSQL(self):
         if PhAppConfig().getConf()['scope'] != '*':
-            return "select * from prod_partition_condi where uid='" + PhAppConfig().getConf()['userId'] + "';"
+            return "select * from prod_partition_condi where uid='" + PhLocalStorage().getStorage()['userId'] + "';"
         else:
             return "select * from prod_partition_condi;"
 
@@ -120,3 +117,21 @@ class PhSQLQueryBuilder(object):
 
     def local_queryUnsavedCount(self):
         return "select count(*) from clean_operations WHERE TMPID!='';"
+
+    def local_createLastLoginUser(self):
+        create_sql = "create table if not exists last_user ( uid TEXT, id INT PRIMARY KEY)"
+        PhLogging().console().debug(create_sql)
+        return create_sql
+
+    def local_queryLastLoginUser(self):
+        sql = "select uid from last_user where id=1"
+        PhLogging().console().debug(sql)
+        return sql
+
+    def local_pushLastLoginUser(self, uid):
+        if uid == "":
+            uid = str(uuid.uuid4())
+
+        sql = "insert or replace into last_user ( uid, id ) VALUES ( '" + uid + "', 1);"
+        PhLogging().console().debug(sql)
+        return sql

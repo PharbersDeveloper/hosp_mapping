@@ -36,7 +36,8 @@ class PhLoginWidget(QWidget):
             conf.getConf()['displayName'] = login_result['user']['firstName'] + login_result['user']['lastName']
             PhLogging().console().debug(login_result)
 
-            last_login_user = PhAppConfig().getConf()['last_login_user']
+            # last_login_user = PhAppConfig().getConf()['last_login_user']
+            last_login_user = PhLocalStorage().getStorage()['last_login_user']
             PhLogging().console().debug(last_login_user)
             PhLogging().console().debug(conf.getConf()['userId'])
             if (last_login_user is not None) and (last_login_user != conf.getConf()['userId']):
@@ -46,10 +47,12 @@ class PhLoginWidget(QWidget):
                     # PhLogging().countfile().info(PhLocalStorage().getStorage()['unsync_step_count'])
                     PhLocalStorage().getStorage()['unsync_steps'] = []
                     PhLocalStorage().getStorage()['unsync_steps_index'] = []
+                    PhLocalStorage().afterSyncUnsavedSteps()
                 else:
                     return
 
-            PhLogging().userfile().info(PhAppConfig().getConf()['userId'])
+            # PhLogging().userfile().info(PhLocalStorage().getStorage()['userId'])
+            PhLocalStorage().pushLastLoginUser(last_login_user)
             self.appPrepareQueryCondi()
             self.hide()
             if self.mw is None:

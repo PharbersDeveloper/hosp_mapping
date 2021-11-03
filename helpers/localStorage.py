@@ -16,6 +16,7 @@ class PhLocalStorage(object):
         self.cur = self.cx.cursor()
         self.storage['unsync_step_count'] = self.queryUnsavedStepsCount()
         self.storage['unsync_steps'] = self.queryUnsavedSteps()
+        self.storage['last_login_user'] = self.queryLastLoginUser()
 
     # def getConf(self):
     #     return self.conf
@@ -50,4 +51,21 @@ class PhLocalStorage(object):
     def afterSyncUnsavedSteps(self):
         PhLogging().console().debug('after sync unsaved steps')
         self.cur.execute(PhSQLQueryBuilder().local_clearUnsavedEidt())
+        self.cx.commit()
+
+    def queryLastLoginUser(self):
+        PhLogging().console().debug('after sync unsaved steps')
+        self.cur.execute(PhSQLQueryBuilder().local_createLastLoginUser())
+        self.cx.commit()
+
+        self.cur.execute(PhSQLQueryBuilder().local_queryLastLoginUser())
+        tails = self.cur.fetchall()
+        if len(tails) == 0:
+            return ''
+        else:
+            return tails[0][0]
+
+    def pushLastLoginUser(self, uid):
+        PhLogging().console().debug('after sync unsaved steps')
+        self.cur.execute(PhSQLQueryBuilder().local_pushLastLoginUser(uid))
         self.cx.commit()
