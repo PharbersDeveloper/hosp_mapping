@@ -66,6 +66,7 @@ class PhLocalStorage(object):
             return tails[0][0]
 
     def pushLastLoginUser(self, uid):
-        PhLogging().console().debug('after sync unsaved steps')
+        PhLogging().console().debug('push last login user')
+        PhLogging().console().debug(uid)
         self.cur.execute(PhSQLQueryBuilder().local_pushLastLoginUser(uid))
         self.cx.commit()
