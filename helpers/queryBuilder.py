@@ -49,9 +49,9 @@ class PhSQLQueryBuilder(object):
         PhLogging().console().debug(ist_sql)
         return ist_sql
 
-    def queryCondiSQL(self):
+    def queryCondiSQL(self, uid):
         if PhAppConfig().getConf()['scope'] != '*':
-            return "select * from prod_partition_condi where uid='" + PhLocalStorage().getStorage()['userId'] + "';"
+            return "select * from prod_partition_condi where uid='" + uid + "';"
         else:
             return "select * from prod_partition_condi;"
 

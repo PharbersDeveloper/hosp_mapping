@@ -52,7 +52,7 @@ class PhLoginWidget(QWidget):
                     return
 
             # PhLogging().userfile().info(PhLocalStorage().getStorage()['userId'])
-            PhLocalStorage().pushLastLoginUser(last_login_user)
+            PhLocalStorage().pushLastLoginUser(conf.getConf()['userId'])
             self.appPrepareQueryCondi()
             self.hide()
             if self.mw is None:
@@ -90,7 +90,7 @@ class PhLoginWidget(QWidget):
 
     def appPrepareQueryCondi(self):
         parameters = {
-            'query': PhSQLQueryBuilder().queryCondiSQL(),
+            'query': PhSQLQueryBuilder().queryCondiSQL(PhAppConfig().getConf()['userId']),
             'schema': PhAppConfig().getConf()['condi_schema']
         }
         PhLogging().console().debug(parameters)

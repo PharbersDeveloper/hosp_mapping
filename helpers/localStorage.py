@@ -54,7 +54,7 @@ class PhLocalStorage(object):
         self.cx.commit()
 
     def queryLastLoginUser(self):
-        PhLogging().console().debug('after sync unsaved steps')
+        PhLogging().console().debug('query laster login user')
         self.cur.execute(PhSQLQueryBuilder().local_createLastLoginUser())
         self.cx.commit()
 
