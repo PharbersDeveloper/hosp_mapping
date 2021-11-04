@@ -14,6 +14,7 @@ import json
 from helpers.queryBuilder import PhSQLQueryBuilder
 from widgets.dialogs.queryCondiDlg import PhQueryCandiDlg
 from widgets.progressLabel import PhProgressLabel
+from widgets.webWidget import PhWebWidget
 
 
 class PhMainWidget(QWidget):
@@ -34,7 +35,7 @@ class PhMainWidget(QWidget):
         self.tableView.setColumnHidden(13, True)
         self.tableView.setColumnHidden(14, True)
 
-        self.wev = QWebEngineView()
+        self.wev = PhWebWidget() # QWebEngineView()
         # self.wev.load(QUrl('https://www.baidu.com'))
         self.wev.load(QUrl('https://cn.bing.com'))
 
