@@ -15,7 +15,7 @@ class PhAppConfig(object):
         return self.conf
 
     def queryDefinedSchemas(self):
-        f = open('./config/projectDataConfig.json')
+        f = open('./config/projectDataConfig.json', encoding='utf-8')
         tmp = json.loads(f.read(1024))
         self.conf['defined_schema'] = tmp['schema']
         self.conf['condi_schema'] = tmp['condi_schema']
