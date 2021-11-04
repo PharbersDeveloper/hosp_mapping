@@ -28,9 +28,6 @@ class PhMainWidget(QWidget):
         model.signal_no_data.connect(self.on_no_data_for_tmp_user)
         self.tableView.setModel(model)
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
-        self.tableView.setColumnHidden(1, True)
-        self.tableView.setColumnHidden(13, True)
-        self.tableView.setColumnHidden(14, True)
 
         self.wev = QWebEngineView()
         # self.wev.load(QUrl('https://www.baidu.com'))
@@ -79,28 +76,23 @@ class PhMainWidget(QWidget):
     def keyPressEvent(self, event):
         key = event.key()
         handlers = {
-            Qt.Key_F1: self.searchWithText,
-            Qt.Key_F2: self.searchWithQcc
+            Qt.Key_F1: self.searchWithText
         }
         handler = handlers.get(key)
         if handler:
             select = self.tableView.currentIndex().data()
             handler(select)
 
-
     def searchWithText(self, msg):
         # self.wev.load(QUrl('https://www.baidu.com/s?wd=' + msg))
         self.wev.load(QUrl('https://cn.bing.com/search?q=' + msg))
 
-    def searchWithQcc(self, msg):
-        self.wev.load(QUrl('https://www.qcc.com/web/search?key='+ msg))
-
 
     def on_data_modify(self, value):
         # 1. 添加log count
-        print(PhLocalStorage().getStorage()['unsync_step_count'])
-        PhLocalStorage().getStorage()['unsync_step_count'] = PhLocalStorage().getStorage()['unsync_step_count'] + 1
-        # PhLogging().countfile().info(PhLocalStorage().getStorage()['unsync_step_count'])
+        print(PhAppConfig().getConf()['unsync_step_count'])
+        PhAppConfig().getConf()['unsync_step_count'] = PhAppConfig().getConf()['unsync_step_count'] + 1
+        PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
         # 2. 添加operation log
         # 修改一下，先插入到db中
         # PhLogging().opfile().info(value)
@@ -143,18 +135,10 @@ class PhMainWidget(QWidget):
             return
 
         # 清除本地操作缓存
-<<<<<<< Updated upstream
         PhAppConfig().getConf()['unsync_step_count'] = 0
         PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
         PhAppConfig().getConf()['unsync_steps'] = []
         PhAppConfig().getConf()['unsync_steps_index'] = []
-=======
-        PhLocalStorage().getStorage()['unsync_step_count'] = 0
-        # PhLogging().countfile().info(PhLocalStorage().getStorage()['unsync_step_count'])
-        PhLocalStorage().getStorage()['unsync_steps'] = []
-        PhLocalStorage().getStorage()['unsync_steps_index'] = []
-        PhLocalStorage().afterSyncUnsavedSteps()
->>>>>>> Stashed changes
 
         QMessageBox.information(self, "同步成功", "同步数据成功")
 
