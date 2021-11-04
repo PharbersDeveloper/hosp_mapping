@@ -5,7 +5,7 @@ import tailer
 import os
 import json
 import sqlite3
-import uuid
+
 
 @singleton
 class PhAppConfig(object):
@@ -14,17 +14,13 @@ class PhAppConfig(object):
     def __init__(self):
         self.conf = {}
         self.queryDefinedSchemas()
-        self.cx = sqlite3.connect('./logs/operations.db')
-        self.cx.execute("create table if not exists clean_operations ( Idx INT,Id TEXT,Hospname TEXT,Level TEXT,Address TEXT,lchange TEXT,lop TEXT,ltm TEXT, TMPID TEXT PRIMARY KEY);")
-        self.cur = self.cx.cursor()
-        self.conf['unsync_step_count'] = self.queryUnsavedStepsCound()
-        self.conf['unsync_steps'] = self.queryUnsavedSteps()
+        self.conf['unsync_step_count'] = self.queryUnsavedStepsCount()
         self.conf['last_login_user'] = self.queryLastLoginUser()
 
     def getConf(self):
         return self.conf
 
-    def queryUnsavedStepsCound(self):
+    def queryUnsavedStepsCount(self):
         if not os.path.exists('./logs/count_logs.out'):
             return 0
         else:
@@ -35,39 +31,15 @@ class PhAppConfig(object):
             else:
                 return int(tails[0])
 
-    def queryUnsavedSteps(self):
-        PhLogging().console().debug('loading unsaved steps')
-        self.conf['unsync_steps_index'] = []
-        self.cur.execute("select Idx, Id, Hospname, Level, Address, lchange, lop, ltm from clean_operations order by ltm DESC limit " + str(self.conf['unsync_step_count']))
-        tails = self.cur.fetchall()
-        tmp = []
-        result = []
-        for item in tails:
-            if item[0] not in tmp:
-                tmp.append(str(item[0]))
-                result.append(list(item))
-        self.conf['unsync_steps_index'] = tmp
-        return result
-
-    def pushUnsavedStep(self, value):
-        PhLogging().console().debug(value)
-        tmp_sql = "insert into clean_operations (Idx, Id, Hospname, Level, Address, lchange, lop, ltm, TMPID) VALUES ("
-        for i, tmp in enumerate(value.split('\t')):
-            if i == 0:
-                tmp_sql = tmp_sql + tmp
-            else:
-                tmp_sql = tmp_sql + ","
-                tmp_sql = tmp_sql + "'" + tmp + "'"
-        tmp_sql = tmp_sql + "," + "'" + str(uuid.uuid4()) + "'" + ");"
-        PhLogging().console().debug(tmp_sql)
-        self.cur.execute(tmp_sql)
-        self.cx.commit()
-
     def queryDefinedSchemas(self):
         f = open('./config/projectDataConfig.json')
         tmp = json.loads(f.read(1024))
         self.conf['defined_schema'] = tmp['schema']
         self.conf['condi_schema'] = tmp['condi_schema']
+        self.conf['trans_schema'] = tmp['trans_schema']
+        self.conf['table'] = tmp['table']
+        self.conf['count_condi'] = tmp['count_condi']
+        self.conf['can_change_cols'] = tmp['can_change_cols']
 
     def queryLastLoginUser(self):
         if not os.path.exists('./logs/user_logs.out'):

@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QMessageBox
 
+from helpers.localStorage import PhLocalStorage
 from helpers.phLogging import PhLogging
 from helpers.queryBuilder import PhSQLQueryBuilder
 from ui.login import Ui_Form
@@ -43,8 +44,8 @@ class PhLoginWidget(QWidget):
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
                     PhAppConfig().getConf()['unsync_step_count'] = 0
                     PhLogging().countfile().info(PhAppConfig().getConf()['unsync_step_count'])
-                    PhAppConfig().getConf()['unsync_steps'] = []
-                    PhAppConfig().getConf()['unsync_steps_index'] = []
+                    PhLocalStorage().getStorage()['unsync_steps'] = []
+                    PhLocalStorage().getStorage()['unsync_steps_index'] = []
                 else:
                     return
 

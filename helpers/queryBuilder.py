@@ -1,20 +1,23 @@
 from helpers.appConfig import PhAppConfig
 from helpers.phLogging import PhLogging
 from helpers.singleton import singleton
+import uuid
 
 
 @singleton
 class PhSQLQueryBuilder(object):
     filters = []
     sorts = ''
-    tableName = ''
+    tableName = PhAppConfig().getConf()['table']
+    count_condi = PhAppConfig().getConf()['count_condi']
     step = 1000
     skip = 0
     condi_table = ''
 
     def __init__(self):
-        self.tableName = 'prod_clean'
-        self.condi_table = 'prod_partition_condi'
+        pass
+        # self.tableName = 'prod_clean'
+        # self.condi_table = 'prod_partition_condi'
         self.sorts = 'Index'
 
     def querySelectSQL(self):
@@ -25,17 +28,17 @@ class PhSQLQueryBuilder(object):
         sql = sql + " order by " + self.sorts + " limit " + str(self.step) + " offset " + str(self.skip)
         return sql
 
-    def alertDeleteSQL(self):
-        del_sql = 'alter table prod_clean delete where Index in [' + \
-                  ','.join(PhAppConfig().getConf()['unsync_steps_index']) + \
+    def alertDeleteSQL(self, indices):
+        del_sql = 'alter table ' + self.tableName + ' delete where Index in [' + \
+                  ','.join(indices) + \
                   '];'
         PhLogging().console().debug(del_sql)
         return del_sql
 
-    def alertInsertMultiSQL(self):
-        ist_sql = "insert into prod_clean (Index, Id, Hospname, Level, Address, lchange, lop, ltm) VALUES "
+    def alertInsertMultiSQL(self, unsync_steps):
+        ist_sql = "insert into " + self.tableName + " (" + ','.join(PhAppConfig().getConf()['defined_schema']) + ") VALUES "
         item_insert_lst = []
-        for item in PhAppConfig().getConf()['unsync_steps']:
+        for item in unsync_steps:
             tmp_sql = "("
             for i, tmp in enumerate(item):
                 if i == 0:
@@ -59,7 +62,7 @@ class PhSQLQueryBuilder(object):
         return "alter table prod_partition_condi delete where uid !=''"
 
     def alterAllCandi(self):
-        ist_sql = "insert into prod_partition_condi (uid, uname, condi) VALUES "
+        ist_sql = "insert into prod_partition_condi (" + ','.join(PhAppConfig().getConf()['condi_schema']) + ") VALUES "
         item_insert_lst = []
         for item in PhAppConfig().condi:
             tmp_sql = "("
@@ -76,7 +79,38 @@ class PhSQLQueryBuilder(object):
         return ist_sql
 
     def queryTotalCountSQL(self):
-        return "select count(*) from prod_clean"
+        return "select count(*) from " + self.tableName
 
     def queryProgressCountSQL(self):
-        return "select count(*) from prod_clean where lchange=''"
+        return "select count(*) from " + self.tableName + " where " + self.count_condi
+
+    def local_createIfExist(self):
+        tmp = PhAppConfig().getConf()['defined_schema'].copy()
+        tmp.append("TMPID")
+
+        create_sql = "create table if not exists clean_operations ( " + \
+            " TEXT,".join(tmp).replace("TEXT", "INT", 1).replace("Index", "Idx", 1) + " TEXT PRIMARY KEY);"
+        PhLogging().console().debug(create_sql)
+        return create_sql
+
+    def local_queryUnsavedEdit(self):
+        sql = "select " + ",".join(PhAppConfig().getConf()['defined_schema']) + \
+            " from clean_operations order by ltm DESC limit " + str(PhAppConfig().getConf()['unsync_step_count'])
+        sql = sql.replace("Index", "Idx", 1)
+        PhLogging().console().debug(sql)
+        return sql
+
+    def local_pushUnsavedEdit(self, value):
+        tmp = PhAppConfig().getConf()['defined_schema'].copy()
+        tmp.append("TMPID")
+        tmp_sql = "insert into clean_operations (" + ",".join(tmp) + ") VALUES ("
+        for i, tmp in enumerate(value.split('\t')):
+            if i == 0:
+                tmp_sql = tmp_sql + tmp
+            else:
+                tmp_sql = tmp_sql + ","
+                tmp_sql = tmp_sql + "'" + tmp + "'"
+        tmp_sql = tmp_sql + "," + "'" + str(uuid.uuid4()) + "'" + ");"
+        tmp_sql = tmp_sql.replace("Index", "Idx", 1)
+        PhLogging().console().debug(tmp_sql)
+        return tmp_sql

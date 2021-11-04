@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QMessageBox
 from widgets.login import PhLoginWidget
 import os
 import platform
+import ssl
 
 
 if __name__ == '__main__':
@@ -16,6 +17,7 @@ if __name__ == '__main__':
     #     cwd = cwd[0:cwd.index('/', cwd.index('.app'))]
     #     os.chdir(cwd)
 
+    ssl._create_default_https_context = ssl._create_unverified_context
     app = QtWidgets.QApplication(sys.argv)
 
     lockFile = QLockFile("./appName.app.lock")

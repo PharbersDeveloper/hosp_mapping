@@ -14,7 +14,7 @@ class PhHospModel(QAbstractTableModel):
     """
     def __init__(self):
         super(PhHospModel, self).__init__()
-        self._headers = PhAppConfig().getConf()['defined_schema']
+        self._headers = PhAppConfig().getConf()['trans_schema']
         self._data = []
         # self.updateData(self.refreshQueryData())
 
@@ -60,19 +60,21 @@ class PhHospModel(QAbstractTableModel):
 
     def flags(self, index):
         flags = super(PhHospModel, self).flags(index)
-        if index.column() == self._headers.index('lchange'):
+        if self._headers[index.column()] in PhAppConfig().getConf()['can_change_cols']:
             flags = flags | Qt.ItemIsEditable
         return flags
 
     def setData(self, index, value, role=Qt.EditRole):
         # 编辑后更新模型中的数据 View中编辑后，View会调用这个方法修改Model中的数据
+        op_col = len(PhAppConfig().getConf()['defined_schema']) - 2
+        tm_col = op_col + 1
         if index.isValid() and 0 <= index.row() < len(self._data) and value:
             col = index.column()
             if 0 < col < len(self._headers):
                 self.beginResetModel()
                 self._data[index.row()][col] = value
-                self._data[index.row()][col + 1] = PhAppConfig().getConf()['displayName']
-                self._data[index.row()][col + 2] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self._data[index.row()][op_col] = PhAppConfig().getConf()['displayName']
+                self._data[index.row()][tm_col] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.endResetModel()
                 self.signal_data_mod.emit('\t'.join(self._data[index.row()]))
                 return True

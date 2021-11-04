@@ -1,8 +1,18 @@
 {
+    "table": "prod_clean_v2",
+    "count_condi": "lop!=''",
     "schema": [
-        "Index", "Id", "Hospname", "Level", "Address", "lchange", "lop", "ltm"
+        "Index", "Id", "Hospname", "Province", "City", "lHospname", "lHospalias", "lDistrict", "lAddress", "lLevel", "lCat",
+        "lTel", "lOffweb", "lop", "ltm"
+    ],
+    "trans_schema": [
+        "Index", "Id", "Hospname", "Province", "City", "lHospname", "lHospalias", "lDistrict", "lAddress", "lLevel", "lCat",
+        "lTel", "lOffweb", "lop", "ltm"
     ],
     "condi_schema": [
         "uid", "uname", "condi"
+    ],
+    "can_change_cols": [
+        "lHospname", "lHospalias", "lDistrict", "lAddress", "lLevel", "lCat", "lTel", "lOffweb"
     ]
 }
