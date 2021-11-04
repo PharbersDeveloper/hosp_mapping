@@ -6,8 +6,8 @@
         "lTel", "lOffweb", "lop", "ltm"
     ],
     "trans_schema": [
-        "Index", "Id", "Hospname", "Province", "City", "lHospname", "lHospalias", "lDistrict", "lAddress", "lLevel", "lCat",
-        "lTel", "lOffweb", "lop", "ltm"
+        "序号", "Id", "医院名称", "省", "市", "医院现用名称", "医院别名/曾用名", "所属区县", "医院地址", "医院等级", "经济类型",
+        "医院电话", "医院网址", "lop", "ltm"
     ],
     "condi_schema": [
         "uid", "uname", "condi"
