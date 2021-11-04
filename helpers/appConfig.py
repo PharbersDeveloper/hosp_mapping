@@ -1,11 +1,12 @@
 # -*- coding:utf-8 -*-
-from helpers.phLogging import PhLogging
 from helpers.singleton import singleton
-import tailer
-import os
 import json
+<<<<<<< Updated upstream
 import sqlite3
 import uuid
+=======
+
+>>>>>>> Stashed changes
 
 @singleton
 class PhAppConfig(object):
@@ -14,16 +15,20 @@ class PhAppConfig(object):
     def __init__(self):
         self.conf = {}
         self.queryDefinedSchemas()
+<<<<<<< Updated upstream
         self.cx = sqlite3.connect('./logs/operations.db')
         self.cx.execute("create table if not exists clean_operations ( Idx INT,Id TEXT,Hospname TEXT,Level TEXT,Address TEXT,lchange TEXT,lop TEXT,ltm TEXT, TMPID TEXT PRIMARY KEY);")
         self.cur = self.cx.cursor()
         self.conf['unsync_step_count'] = self.queryUnsavedStepsCound()
         self.conf['unsync_steps'] = self.queryUnsavedSteps()
         self.conf['last_login_user'] = self.queryLastLoginUser()
+=======
+>>>>>>> Stashed changes
 
     def getConf(self):
         return self.conf
 
+<<<<<<< Updated upstream
     def queryUnsavedStepsCound(self):
         if not os.path.exists('./logs/count_logs.out'):
             return 0
@@ -63,22 +68,13 @@ class PhAppConfig(object):
         self.cur.execute(tmp_sql)
         self.cx.commit()
 
+=======
+>>>>>>> Stashed changes
     def queryDefinedSchemas(self):
         f = open('./config/projectDataConfig.json')
         tmp = json.loads(f.read(1024))
         self.conf['defined_schema'] = tmp['schema']
         self.conf['condi_schema'] = tmp['condi_schema']
-
-    def queryLastLoginUser(self):
-        if not os.path.exists('./logs/user_logs.out'):
-            return None
-        else:
-            tails = self.filterEmpty(tailer.tail(open('./logs/user_logs.out', encoding='utf-8'), 1))
-            tails.reverse()
-            if len(tails) == 0:
-                return None
-            else:
-                return tails[0]
 
     def configClear(self):
         self.condi = []

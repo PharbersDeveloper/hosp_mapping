@@ -7,7 +7,12 @@ from PyQt5.QtWidgets import QMessageBox
 from widgets.login import PhLoginWidget
 import os
 import platform
+<<<<<<< Updated upstream
 
+=======
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+>>>>>>> Stashed changes
 
 if __name__ == '__main__':
     # ptf = platform.system()
