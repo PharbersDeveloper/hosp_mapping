@@ -78,7 +78,8 @@ class PhMainWidget(QWidget):
     def keyPressEvent(self, event):
         key = event.key()
         handlers = {
-            Qt.Key_F1: self.searchWithText
+            Qt.Key_F1: self.searchWithText,
+            Qt.Key_F2: self.searchWithQcc
         }
         handler = handlers.get(key)
         if handler:
@@ -89,6 +90,8 @@ class PhMainWidget(QWidget):
         # self.wev.load(QUrl('https://www.baidu.com/s?wd=' + msg))
         self.wev.load(QUrl('https://cn.bing.com/search?q=' + msg))
 
+    def searchWithQcc(self, msg):
+        self.wev.load(QUrl('https://www.qcc.com/web/search?key=' + msg))
 
     def on_data_modify(self, value):
         # 1. 添加log count
