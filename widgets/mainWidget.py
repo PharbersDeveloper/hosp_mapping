@@ -30,6 +30,9 @@ class PhMainWidget(QWidget):
         model.signal_no_data.connect(self.on_no_data_for_tmp_user)
         self.tableView.setModel(model)
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
+        self.tableView.setColumnHidden(1,True)
+        self.tableView.setColumnHidden(13, True)
+        self.tableView.setColumnHidden(14, True)
 
         self.wev = QWebEngineView()
         # self.wev.load(QUrl('https://www.baidu.com'))
