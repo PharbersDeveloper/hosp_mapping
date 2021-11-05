@@ -19,6 +19,12 @@ class PhSQLQueryBuilder(object):
     def __init__(self):
         self.sorts = 'Index'
 
+    def nextPage(self):
+        self.skip = self.skip + self.step
+
+    def revertToBasePage(self):
+        self.skip = 0
+
     def querySelectSQL(self):
         sql = "select " + ','.join(PhAppConfig().getConf()['defined_schema']) + \
               " from " + self.tableName

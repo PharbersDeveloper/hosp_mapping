@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 from helpers.localStorage import PhLocalStorage
 from helpers.phLogging import PhLogging
 from model.hospModel import PhHospModel
-from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import Qt, pyqtSignal
 from helpers.appConfig import PhAppConfig
 import http.client
@@ -33,6 +32,7 @@ class PhMainWidget(QWidget):
         model.signal_no_data.connect(self.on_no_data_for_tmp_user)
         self.tableView.setModel(model)
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
+
         self.tableView.setColumnHidden(1,True)
         self.tableView.setColumnHidden(14, True)
         self.tableView.setColumnHidden(15, True)
@@ -123,17 +123,18 @@ class PhMainWidget(QWidget):
     def on_vertical_scrolled(self, dy):
         self.last_dy = self.current_dy
         self.current_dy = dy
-        # TODO: 到底了之后继续加载数据
-        pass
+        if dy == self.tableView.verticalScrollBar().maximum():
+            PhSQLQueryBuilder().nextPage()
+            self.tableView.model().appendData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
 
     def on_sync_btn_clicked(self):
         # TODO: 这个地方有个事务问题没解决, 线上的分布式锁的问题也没有解决
         # 如果同步的过程中，前端程序崩溃，数据不可恢复
         # 如果多人同时同步，可能会有些许问题
-        # if PhLogging().check_nun_values(PhLocalStorage().getStorage()['unsync_steps']) == False:
-        #     PhLogging().console().fatal('某行出现错误')
-        #     QMessageBox.critical(self, "同步错误", "某行出现错误")
-        #     return
+        if PhLogging().check_nun_values(PhLocalStorage().getStorage()['unsync_steps']) == False:
+            PhLogging().console().fatal('某行出现错误')
+            QMessageBox.critical(self, "同步错误", "某行出现错误")
+            return
 
         if len(PhLocalStorage().getStorage()['unsync_steps_index']) == 0:
             PhLogging().console().debug('没有需要同步的信息')
@@ -150,13 +151,6 @@ class PhMainWidget(QWidget):
             QMessageBox.critical(self, "同步错误", "同步错误，请联系管理员")
             return
 
-
-        # if PhLogging().check_nun_values(PhLocalStorage().getStorage()['unsync_steps']) == False:
-        #     PhLogging().console().fatal('某行数据未处理完成')
-        #     QMessageBox.critical(self, "同步错误", "某行数据未处理完成")
-        #     return
-
-
         # 清除本地操作缓存
         PhLocalStorage().getStorage()['unsync_step_count'] = 0
         # PhLogging().countfile().info(PhLocalStorage().getStorage()['unsync_step_count'])
@@ -171,7 +165,8 @@ class PhMainWidget(QWidget):
         self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
 
     def on_logout_btn_clicked(self):
-        self.user_logout.emit()
+        self.close()
+        # self.user_logout.emit()
 
     def on_no_data_for_tmp_user(self):
         PhLogging().console().debug('none data for temp user')
@@ -264,3 +259,8 @@ class PhMainWidget(QWidget):
         if self.show_count == 0:
             self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
         self.show_count = self.show_count + 1
+
+    def closeEvent(self, a0: QtGui.QCloseEvent):
+        super(self, a0)
+        self.on_candi_btn_clicked()
+        self.user_logout.emit()
