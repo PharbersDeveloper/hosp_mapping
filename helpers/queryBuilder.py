@@ -94,7 +94,9 @@ class PhSQLQueryBuilder(object):
         tmp.append("TMPID")
 
         create_sql = "create table if not exists clean_operations ( " + \
-            " TEXT,".join(tmp).replace("TEXT", "INT", 1).replace("Index", "Idx", 1) + " TEXT PRIMARY KEY);"
+                     " TEXT,".join(tmp).replace("Index", "Idx", 1) + " TEXT PRIMARY KEY);"
+        # create_sql = "create table if not exists clean_operations ( " + \
+        #     " TEXT,".join(tmp).replace("TEXT", "INT", 1).replace("Index", "Idx", 1) + " TEXT PRIMARY KEY);"
         PhLogging().console().debug(create_sql)
         return create_sql
 
@@ -111,7 +113,7 @@ class PhSQLQueryBuilder(object):
         tmp_sql = "insert into clean_operations (" + ",".join(tmp) + ") VALUES ("
         for i, tmp in enumerate(value.split('\t')):
             if i == 0:
-                tmp_sql = tmp_sql + tmp
+                tmp_sql = tmp_sql + "'" + tmp + "'"
             else:
                 tmp_sql = tmp_sql + ","
                 tmp_sql = tmp_sql + "'" + tmp + "'"
