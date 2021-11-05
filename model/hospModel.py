@@ -1,3 +1,5 @@
+import re
+
 from PyQt5.QtCore import Qt, QAbstractTableModel, pyqtSignal, QModelIndex
 import http.client
 import json
@@ -78,6 +80,7 @@ class PhHospModel(QAbstractTableModel):
 
     def setData(self, index, value, role=Qt.EditRole):
         # 编辑后更新模型中的数据 View中编辑后，View会调用这个方法修改Model中的数据
+        value = value.replace("\t", "")
         op_col = len(PhAppConfig().getConf()['defined_schema']) - 2
         tm_col = op_col + 1
         if index.isValid() and 0 <= index.row() < len(self._data) and value:

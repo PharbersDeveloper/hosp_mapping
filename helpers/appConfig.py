@@ -36,3 +36,8 @@ class PhAppConfig(object):
 
     def filterEmpty(self, lst):
         return list(filter(lambda x: x != '', lst))
+
+
+
+
+
