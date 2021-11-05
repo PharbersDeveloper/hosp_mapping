@@ -9,6 +9,7 @@ from helpers.phLogging import PhLogging
 class PhHospModel(QAbstractTableModel):
     signal_data_mod = pyqtSignal(str)
     signal_no_data = pyqtSignal()
+    signal_all_data = pyqtSignal()
     """
     表格数据模型MVC模式
     """
@@ -27,6 +28,17 @@ class PhHospModel(QAbstractTableModel):
         if len(data) == 0:
             self.signal_no_data.emit()
         self.endResetModel()
+
+    def appendData(self, data):
+        """
+        (自定义)追加数据
+        """
+        self.beginResetModel()
+        self._data = self._data + data
+        if len(data) == 0:
+            self.signal_all_data.emit()
+        self.endResetModel()
+
 
     def data(self, index, role=None):
         if role == Qt.DisplayRole:

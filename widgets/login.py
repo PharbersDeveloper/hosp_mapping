@@ -121,6 +121,7 @@ class PhLoginWidget(QWidget):
     def on_user_logout_event(self):
         # PhAppConfig().configClear()
         PhLocalStorage().getStorage()['last_login_user'] = PhLocalStorage().queryLastLoginUser()
+        PhSQLQueryBuilder().revertToBasePage()
         PhSQLQueryBuilder().filters = []
         self.mw.hide()
         self.mw.deleteLater()
