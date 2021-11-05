@@ -131,10 +131,10 @@ class PhMainWidget(QWidget):
         # TODO: 这个地方有个事务问题没解决, 线上的分布式锁的问题也没有解决
         # 如果同步的过程中，前端程序崩溃，数据不可恢复
         # 如果多人同时同步，可能会有些许问题
-        if PhLogging().check_nun_values(PhLocalStorage().getStorage()['unsync_steps']) == False:
-            PhLogging().console().fatal('某行出现错误')
-            QMessageBox.critical(self, "同步错误", "某行出现错误")
-            return
+        # if PhLogging().check_nun_values(PhLocalStorage().getStorage()['unsync_steps']) == False:
+        #     PhLogging().console().fatal('某行出现错误')
+        #     QMessageBox.critical(self, "同步错误", "某行出现错误")
+        #     return
 
         if len(PhLocalStorage().getStorage()['unsync_steps_index']) == 0:
             PhLogging().console().debug('没有需要同步的信息')
