@@ -1,3 +1,5 @@
+import re
+
 from helpers.appConfig import PhAppConfig
 from helpers.phLogging import PhLogging
 from helpers.singleton import singleton
