@@ -1,3 +1,5 @@
+import re
+
 from PyQt5 import QtGui
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import QWidget, QTableView, QPushButton, QLabel, QMessageBox
@@ -30,9 +32,10 @@ class PhMainWidget(QWidget):
         model.signal_no_data.connect(self.on_no_data_for_tmp_user)
         self.tableView.setModel(model)
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
-        self.tableView.setColumnHidden(1, True)
-        self.tableView.setColumnHidden(13, True)
+
+        self.tableView.setColumnHidden(1,True)
         self.tableView.setColumnHidden(14, True)
+        self.tableView.setColumnHidden(15, True)
 
         self.wev = PhWebWidget() # QWebEngineView()
         # self.wev.load(QUrl('https://www.baidu.com'))
@@ -128,6 +131,11 @@ class PhMainWidget(QWidget):
         # TODO: 这个地方有个事务问题没解决, 线上的分布式锁的问题也没有解决
         # 如果同步的过程中，前端程序崩溃，数据不可恢复
         # 如果多人同时同步，可能会有些许问题
+        # if PhLogging().check_nun_values(PhLocalStorage().getStorage()['unsync_steps']) == False:
+        #     PhLogging().console().fatal('某行出现错误')
+        #     QMessageBox.critical(self, "同步错误", "某行出现错误")
+        #     return
+
         if len(PhLocalStorage().getStorage()['unsync_steps_index']) == 0:
             PhLogging().console().debug('没有需要同步的信息')
             QMessageBox.information(self, "同步成功", "同步数据成功")
@@ -151,6 +159,7 @@ class PhMainWidget(QWidget):
         PhLocalStorage().afterSyncUnsavedSteps()
 
         QMessageBox.information(self, "同步成功", "同步数据成功")
+
 
     def on_refresh_btn_clicked(self):
         self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
