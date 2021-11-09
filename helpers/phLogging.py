@@ -20,17 +20,3 @@ class PhLogging(object):
 
     def userfile(self):
         return logging.getLogger('userLog')
-
-    def check_nun_values(self,data):
-        flag = True
-        for item in data:
-            if '' in item[7:12]:
-                flag = False
-                break
-        return flag
-
-
-
-
-
-
