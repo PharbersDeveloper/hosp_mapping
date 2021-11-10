@@ -269,7 +269,7 @@ class PhMainWidget(QWidget):
         not_fill_unsaved_steps_idx = []
         for row in PhLocalStorage().getStorage()['unsync_steps']:
             for cell_idx in not_none_idx:
-                if row[cell_idx] == '' or ' ':
+                if (row[cell_idx] == '') or (row[cell_idx] != ''.join(row[cell_idx].split())):
                     not_fill_unsaved_steps_idx.append(row[0])
                     break
         return not_fill_unsaved_steps_idx
