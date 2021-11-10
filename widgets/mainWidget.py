@@ -16,6 +16,7 @@ from helpers.queryBuilder import PhSQLQueryBuilder
 from widgets.dialogs.queryCondiDlg import PhQueryCandiDlg
 from widgets.progressLabel import PhProgressLabel
 from widgets.webWidget import PhWebWidget
+import string
 
 
 class PhMainWidget(QWidget):
@@ -269,7 +270,8 @@ class PhMainWidget(QWidget):
         not_fill_unsaved_steps_idx = []
         for row in PhLocalStorage().getStorage()['unsync_steps']:
             for cell_idx in not_none_idx:
-                if (row[cell_idx] == '') or (row[cell_idx] != ''.join(row[cell_idx].split())):
+                row[cell_idx] = (row[cell_idx]).replace(' ','')
+                if row[cell_idx] == '':
                     not_fill_unsaved_steps_idx.append(row[0])
                     break
         return not_fill_unsaved_steps_idx
