@@ -74,7 +74,7 @@ class PhMainWidget(QWidget):
         logoutBtn.clicked.connect(self.on_logout_btn_clicked)
         candiBtn.clicked.connect(self.on_candi_btn_clicked)
         synBtn.clicked.connect(self.on_sync_btn_clicked)
-        refreshBtn.clicked.connect(self.on_refresh_btn_clicked)
+        # refreshBtn.clicked.connect(self.on_refresh_btn_clicked)
 
         self.mainLayout = QVBoxLayout()
         self.mainLayout.addItem(upLayout)
@@ -133,6 +133,7 @@ class PhMainWidget(QWidget):
         # TODO: 这个地方有个事务问题没解决, 线上的分布式锁的问题也没有解决
         # 如果同步的过程中，前端程序崩溃，数据不可恢复
         # 如果多人同时同步，可能会有些许问题
+
         unidx = self.check_nun_values()
         if len(unidx) > 0:
             PhLogging().console().fatal('某行出现错误')
@@ -267,7 +268,7 @@ class PhMainWidget(QWidget):
         not_fill_unsaved_steps_idx = []
         for row in PhLocalStorage().getStorage()['unsync_steps']:
             for cell_idx in not_none_idx:
-                if row[cell_idx] == '':
+                if row[cell_idx] == '' or ' ':
                     not_fill_unsaved_steps_idx.append(row[0])
                     break
         return not_fill_unsaved_steps_idx
