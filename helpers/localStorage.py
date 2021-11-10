@@ -35,6 +35,7 @@ class PhLocalStorage(object):
         self.storage['unsync_steps_index'] = []
         self.cur.execute(PhSQLQueryBuilder().local_queryUnsavedEdit())
         tails = self.cur.fetchall()
+        tails.reverse()
         tmp = []
         result = []
         for item in tails:
@@ -42,6 +43,8 @@ class PhLocalStorage(object):
                 tmp.append(str(item[0]))
                 result.append(list(item))
         self.storage['unsync_steps_index'] = tmp
+        PhLogging().console().debug(result)
+        PhLogging().console().debug(tmp)
         return result
 
     def pushUnsavedStep(self, value):

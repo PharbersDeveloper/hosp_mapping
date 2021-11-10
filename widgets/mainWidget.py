@@ -170,7 +170,6 @@ class PhMainWidget(QWidget):
 
     def on_logout_btn_clicked(self):
         self.close()
-        # self.user_logout.emit()
 
     def on_no_data_for_tmp_user(self):
         PhLogging().console().debug('none data for temp user')
