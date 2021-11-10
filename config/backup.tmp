@@ -12,6 +12,7 @@ CREATE TABLE prod_clean(
 `lCat` String,
 `lTel` String,
 `lOffweb` String,
+`lStatus` String,
 `lop` String,
 `ltm` String,
 `cop` String,
