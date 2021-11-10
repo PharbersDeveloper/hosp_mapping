@@ -74,7 +74,7 @@ class PhMainWidget(QWidget):
         logoutBtn.clicked.connect(self.on_logout_btn_clicked)
         candiBtn.clicked.connect(self.on_candi_btn_clicked)
         synBtn.clicked.connect(self.on_sync_btn_clicked)
-        refreshBtn.clicked.connect(self.on_refresh_btn_clicked)
+        # refreshBtn.clicked.connect(self.on_refresh_btn_clicked)
 
         self.mainLayout = QVBoxLayout()
         self.mainLayout.addItem(upLayout)
