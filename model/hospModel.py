@@ -12,6 +12,7 @@ class PhHospModel(QAbstractTableModel):
     signal_data_mod = pyqtSignal(str)
     signal_no_data = pyqtSignal()
     signal_all_data = pyqtSignal()
+    isQc = False
     """
     表格数据模型MVC模式
     """
@@ -74,24 +75,44 @@ class PhHospModel(QAbstractTableModel):
 
     def flags(self, index):
         flags = super(PhHospModel, self).flags(index)
-        if self._headers[index.column()] in PhAppConfig().getConf()['can_change_cols']:
-            flags = flags | Qt.ItemIsEditable
+        if self.isQc:
+            if self._headers[index.column()] in PhAppConfig().getConf()['can_change_cols']:
+                flags = flags | Qt.ItemIsEditable
+        else:
+            if self._headers[index.column()] in PhAppConfig().getConf()['qc_can_change_cols']:
+                flags = flags | Qt.ItemIsEditable
         return flags
 
     def setData(self, index, value, role=Qt.EditRole):
         # 编辑后更新模型中的数据 View中编辑后，View会调用这个方法修改Model中的数据
         value = value.replace("\t", "")
-        lop_col = len(PhAppConfig().getConf()['defined_schema']) - 4
-        ltm_col = lop_col + 1
-        if index.isValid() and 0 <= index.row() < len(self._data) and value:
-            col = index.column()
-            if 0 < col < len(self._headers):
-                self.beginResetModel()
-                self._data[index.row()][col] = value
-                self._data[index.row()][lop_col] = PhAppConfig().getConf()['displayName']
-                self._data[index.row()][ltm_col] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                self.endResetModel()
-                self.signal_data_mod.emit('\t'.join(self._data[index.row()]))
-                return True
+        if not self.isQc:
+            lop_col = PhAppConfig().getConf()['defined_schema'].index('lop')
+            ltm_col = PhAppConfig().getConf()['defined_schema'].index('ltm')
+            if index.isValid() and 0 <= index.row() < len(self._data) and value:
+                col = index.column()
+                if 0 < col < len(self._headers):
+                    self.beginResetModel()
+                    self._data[index.row()][col] = value
+                    self._data[index.row()][lop_col] = PhAppConfig().getConf()['displayName']
+                    self._data[index.row()][ltm_col] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    self.endResetModel()
+                    self.signal_data_mod.emit('\t'.join(self._data[index.row()]))
+                    return True
+            else:
+                return False
         else:
-            return False
+            cop_col = PhAppConfig().getConf()['defined_schema'].index('cop')
+            ctm_col = PhAppConfig().getConf()['defined_schema'].index('ctm')
+            if index.isValid() and 0 <= index.row() < len(self._data) and value:
+                col = index.column()
+                if 0 < col < len(self._headers):
+                    self.beginResetModel()
+                    self._data[index.row()][col] = value
+                    self._data[index.row()][cop_col] = PhAppConfig().getConf()['displayName']
+                    self._data[index.row()][ctm_col] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    self.endResetModel()
+                    self.signal_data_mod.emit('\t'.join(self._data[index.row()]))
+                    return True
+            else:
+                return False

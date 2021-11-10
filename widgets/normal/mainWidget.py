@@ -1,5 +1,3 @@
-import re
-
 from PyQt5 import QtGui
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import QWidget, QTableView, QPushButton, QLabel, QMessageBox
@@ -14,8 +12,8 @@ import http.client
 import json
 from helpers.queryBuilder import PhSQLQueryBuilder
 from widgets.dialogs.queryCondiDlg import PhQueryCandiDlg
-from widgets.progressLabel import PhProgressLabel
-from widgets.webWidget import PhWebWidget
+from widgets.commom.progressLabel import PhProgressLabel
+from widgets.commom.webWidget import PhWebWidget
 
 
 class PhMainWidget(QWidget):
@@ -25,7 +23,9 @@ class PhMainWidget(QWidget):
     show_count = 0
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setupLayout()
 
+    def setupLayout(self):
         self.tableView = QTableView()
         model = PhHospModel()
         model.signal_data_mod.connect(self.on_data_modify)
@@ -133,7 +133,6 @@ class PhMainWidget(QWidget):
         # TODO: 这个地方有个事务问题没解决, 线上的分布式锁的问题也没有解决
         # 如果同步的过程中，前端程序崩溃，数据不可恢复
         # 如果多人同时同步，可能会有些许问题
-
         unidx = self.check_nun_values()
         if len(unidx) > 0:
             PhLogging().console().fatal('某行出现错误')

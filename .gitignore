@@ -7,3 +7,4 @@ build
 dist
 appName.app.lock
 phclean.spec
+venv/*

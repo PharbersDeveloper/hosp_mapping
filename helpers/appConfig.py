@@ -16,7 +16,7 @@ class PhAppConfig(object):
 
     def queryDefinedSchemas(self):
         f = open('./config/projectDataConfig.json', encoding='utf-8')
-        tmp = json.loads(f.read(1024))
+        tmp = json.loads(f.read(4096))
         self.conf['defined_schema'] = tmp['schema']
         self.conf['condi_schema'] = tmp['condi_schema']
         self.conf['trans_schema'] = tmp['trans_schema']
@@ -24,6 +24,7 @@ class PhAppConfig(object):
         self.conf['count_condi'] = tmp['count_condi']
         self.conf['can_change_cols'] = tmp['can_change_cols']
         self.conf['non_null_cols'] = tmp['non_null_cols']
+        self.conf['qc_can_change_cols'] = tmp['qc_can_change_cols']
 
     def configClear(self):
         self.condi = []
