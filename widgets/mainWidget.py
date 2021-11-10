@@ -16,7 +16,6 @@ from helpers.queryBuilder import PhSQLQueryBuilder
 from widgets.dialogs.queryCondiDlg import PhQueryCandiDlg
 from widgets.progressLabel import PhProgressLabel
 from widgets.webWidget import PhWebWidget
-import string
 
 
 class PhMainWidget(QWidget):
