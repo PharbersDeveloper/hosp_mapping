@@ -52,6 +52,7 @@ class PhMainWidget(QWidget):
         refreshBtn.setText('刷新')
         candiBtn = QPushButton()
         candiBtn.setText('任务分配')
+        refreshBtn.setEnabled(False)
 
         if PhAppConfig().isTmpUser():
             candiBtn.setEnabled(False)
@@ -74,7 +75,7 @@ class PhMainWidget(QWidget):
         logoutBtn.clicked.connect(self.on_logout_btn_clicked)
         candiBtn.clicked.connect(self.on_candi_btn_clicked)
         synBtn.clicked.connect(self.on_sync_btn_clicked)
-        # refreshBtn.clicked.connect(self.on_refresh_btn_clicked)
+        refreshBtn.clicked.connect(self.on_refresh_btn_clicked)
 
         self.mainLayout = QVBoxLayout()
         self.mainLayout.addItem(upLayout)
