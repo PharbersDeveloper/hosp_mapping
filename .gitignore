@@ -8,3 +8,4 @@ dist
 appName.app.lock
 phclean.spec
 venv/*
+nohup.out

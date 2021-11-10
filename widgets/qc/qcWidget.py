@@ -63,4 +63,11 @@ class PhQcWidget(PhMainWidget):
     def on_qc_filter_condi_btn_clicked(self):
         PhLogging().console().debug('filter condi btn')
         dlg = PhQueryQcFilterCondiDlg()
+        dlg.signal_change_qc_condi.connect(self.on_qc_filter_condi_changed)
         dlg.exec()
+
+    def on_qc_filter_condi_changed(self, condi):
+        PhLogging().console().debug('filter condi changed')
+        PhLogging().console().debug(condi)
+        PhSQLQueryBuilder().filters = condi
+        self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
