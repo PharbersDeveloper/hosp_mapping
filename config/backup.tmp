@@ -13,7 +13,7 @@ CREATE TABLE prod_clean(
 `lTel` String,
 `lOffweb` String,
 `lop` String,
-`ltm` String
+`ltm` String,
 `cop` String,
 `ctm` String)
 ENGINE = MergeTree()
