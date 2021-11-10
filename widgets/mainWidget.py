@@ -137,7 +137,7 @@ class PhMainWidget(QWidget):
         unidx = self.check_nun_values()
         if len(unidx) > 0:
             PhLogging().console().fatal('某行出现错误')
-            QMessageBox.critical(self, "同步错误", "{}行出现错误".format(''.join(str(unidx))))
+            QMessageBox.critical(self, "同步错误", "{}行出现错误".format(','.join(unidx)))
             return
 
         if len(PhLocalStorage().getStorage()['unsync_steps_index']) == 0:
