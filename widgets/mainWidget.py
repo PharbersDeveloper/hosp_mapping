@@ -134,10 +134,10 @@ class PhMainWidget(QWidget):
         # 如果同步的过程中，前端程序崩溃，数据不可恢复
         # 如果多人同时同步，可能会有些许问题
 
-        lst = PhLocalStorage().getStorage()['unsync_steps']
-        if PhLogging().check_nun_values(lst) == False:
+        unidx = self.check_nun_values()
+        if len(unidx) > 0:
             PhLogging().console().fatal('某行出现错误')
-            QMessageBox.critical(self, "同步错误", "某行出现错误")
+            QMessageBox.critical(self, "同步错误", "{}行出现错误".format(''.join(str(unidx))))
             return
 
         if len(PhLocalStorage().getStorage()['unsync_steps_index']) == 0:
@@ -259,12 +259,26 @@ class PhMainWidget(QWidget):
         else:
             return steps[steps_index[0]]
 
+    def check_nun_values(self):
+        not_none_cols = PhAppConfig().getConf()['non_null_cols']
+        schema = PhAppConfig().getConf()['trans_schema']
+        not_none_idx = []
+        for item in not_none_cols:
+            not_none_idx.append(schema.index(item))
+
+        not_fill_unsaved_steps_idx = []
+        for row in PhLocalStorage().getStorage()['unsync_steps']:
+            for cell_idx in not_none_idx:
+                if row[cell_idx] == '':
+                    not_fill_unsaved_steps_idx.append(row[0])
+                    break
+        return not_fill_unsaved_steps_idx
+
     def showEvent(self, a0: QtGui.QShowEvent):
         if self.show_count == 0:
             self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
         self.show_count = self.show_count + 1
 
     def closeEvent(self, a0: QtGui.QCloseEvent):
-        super(self, a0)
-        self.on_candi_btn_clicked()
+        self.on_sync_btn_clicked()
         self.user_logout.emit()

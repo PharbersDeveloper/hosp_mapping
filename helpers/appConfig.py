@@ -23,6 +23,7 @@ class PhAppConfig(object):
         self.conf['table'] = tmp['table']
         self.conf['count_condi'] = tmp['count_condi']
         self.conf['can_change_cols'] = tmp['can_change_cols']
+        self.conf['non_null_cols'] = tmp['non_null_cols']
 
     def configClear(self):
         self.condi = []

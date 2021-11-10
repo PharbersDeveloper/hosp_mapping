@@ -81,15 +81,19 @@ class PhHospModel(QAbstractTableModel):
     def setData(self, index, value, role=Qt.EditRole):
         # 编辑后更新模型中的数据 View中编辑后，View会调用这个方法修改Model中的数据
         value = value.replace("\t", "")
-        op_col = len(PhAppConfig().getConf()['defined_schema']) - 2
-        tm_col = op_col + 1
+        cop_col = len(PhAppConfig().getConf()['defined_schema']) - 2
+        lop_col = len(PhAppConfig().getConf()['defined_schema']) - 4
+        ctm_col = cop_col + 1
+        ltm_col = lop_col + 1
         if index.isValid() and 0 <= index.row() < len(self._data) and value:
             col = index.column()
             if 0 < col < len(self._headers):
                 self.beginResetModel()
                 self._data[index.row()][col] = value
-                self._data[index.row()][op_col] = PhAppConfig().getConf()['displayName']
-                self._data[index.row()][tm_col] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self._data[index.row()][cop_col] = PhAppConfig().getConf()['displayName']
+                self._data[index.row()][ctm_col] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self._data[index.row()][lop_col] = PhAppConfig().getConf()['displayName']
+                self._data[index.row()][ltm_col] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.endResetModel()
                 self.signal_data_mod.emit('\t'.join(self._data[index.row()]))
                 return True
