@@ -34,8 +34,6 @@ class PhMainWidget(QWidget):
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
 
         self.tableView.setColumnHidden(1,True)
-        self.tableView.setColumnHidden(14, True)
-        self.tableView.setColumnHidden(15, True)
 
         self.wev = PhWebWidget() # QWebEngineView()
         # self.wev.load(QUrl('https://www.baidu.com'))
@@ -57,6 +55,10 @@ class PhMainWidget(QWidget):
 
         if PhAppConfig().isTmpUser():
             candiBtn.setEnabled(False)
+            self.tableView.setColumnHidden(14, True)
+            self.tableView.setColumnHidden(15, True)
+            self.tableView.setColumnHidden(16, True)
+            self.tableView.setColumnHidden(17, True)
 
         upLayout.addWidget(nameLabel)
         upLayout.addWidget(logoutBtn)
