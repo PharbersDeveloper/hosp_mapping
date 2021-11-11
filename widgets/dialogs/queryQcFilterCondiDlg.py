@@ -17,7 +17,7 @@ class PhQueryQcFilterCondiDlg(QDialog):
         ml = QVBoxLayout()
 
         who_filter_layout = QHBoxLayout()
-        who_eq_label = QLabel("who do it")
+        who_eq_label = QLabel("请选择操作员")
 
         user_name_lst = ['杨渊']
         for item in PhAppConfig().condi:
@@ -29,7 +29,7 @@ class PhQueryQcFilterCondiDlg(QDialog):
         who_filter_layout.addWidget(self.who_ed)
 
         time_filter_layout = QHBoxLayout()
-        time_eq_label = QLabel("time to do it")
+        time_eq_label = QLabel("请选择操作时间")
 
         date_lst = []
         today = datetime.today()
@@ -44,8 +44,8 @@ class PhQueryQcFilterCondiDlg(QDialog):
         time_filter_layout.addWidget(self.time_ed)
 
         btn_layout = QHBoxLayout()
-        summit_btn = QPushButton("summit")
-        cancel_btn = QPushButton("clear condition")
+        summit_btn = QPushButton("提交")
+        cancel_btn = QPushButton("清除筛选条件")
         btn_layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
         btn_layout.addWidget(summit_btn)
         btn_layout.addWidget(cancel_btn)

@@ -38,7 +38,7 @@ class PhQcWidget(PhMainWidget):
         synBtn = QPushButton()
         synBtn.setText('同步')
         condiBtn = QPushButton()
-        condiBtn.setText('filter')
+        condiBtn.setText('筛选')
 
         upLayout.addWidget(nameLabel)
         upLayout.addWidget(logoutBtn)

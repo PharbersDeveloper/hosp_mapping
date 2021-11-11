@@ -11,14 +11,14 @@ class PhChoiceDlg(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        label = QLabel("Choose your work type")
+        label = QLabel("请选择工作类型")
         ml = QVBoxLayout()
         ml.addWidget(label)
         btn_layout = QHBoxLayout()
         normal_btn = QPushButton()
-        normal_btn.setText('normal')
+        normal_btn.setText('普通工作')
         qc_btn = QPushButton()
-        qc_btn.setText('qc')
+        qc_btn.setText('质检工作')
         # btn_layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
         btn_layout.addWidget(normal_btn)
         btn_layout.addWidget(qc_btn)
