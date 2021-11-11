@@ -70,4 +70,5 @@ class PhQcWidget(PhMainWidget):
         PhLogging().console().debug('filter condi changed')
         PhLogging().console().debug(condi)
         PhSQLQueryBuilder().filters = condi
+        PhSQLQueryBuilder().skip = 0
         self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))

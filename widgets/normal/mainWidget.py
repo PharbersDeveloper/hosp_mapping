@@ -167,6 +167,7 @@ class PhMainWidget(QWidget):
 
 
     def on_refresh_btn_clicked(self):
+        PhSQLQueryBuilder().skip = 0
         self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
 
     def on_logout_btn_clicked(self):
