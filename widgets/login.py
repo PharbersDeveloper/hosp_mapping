@@ -61,8 +61,11 @@ class PhLoginWidget(QWidget):
             self.appPrepareQueryCondi()
             self.hide()
 
-            PhLogging().console().debug("need to show choice")
-            self.choice.show()
+            if PhAppConfig().isAdmin():
+                PhLogging().console().debug("need to show choice")
+                self.choice.show()
+            else:
+                self.on_normal_work_clicked()
         else:
             dlg = QMessageBox(self)
             dlg.setWindowTitle('Login Failed!')

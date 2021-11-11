@@ -43,6 +43,11 @@ class PhQcWidget(PhMainWidget):
         upLayout.addWidget(nameLabel)
         upLayout.addWidget(logoutBtn)
 
+        self.wev = PhWebWidget() # QWebEngineView()
+        # self.wev.load(QUrl('https://www.baidu.com'))
+        self.wev.load(QUrl('https://cn.bing.com'))
+
+
         if PhAppConfig().isAdmin():
             progressLabel = PhProgressLabel()
             upLayout.addWidget(progressLabel)
@@ -59,6 +64,7 @@ class PhQcWidget(PhMainWidget):
         self.mainLayout.addWidget(self.tableView)
         # self.mainLayout.addWidget(self.wev)
         self.setLayout(self.mainLayout)
+        self.mainLayout.addWidget(self.wev)
 
     def on_qc_filter_condi_btn_clicked(self):
         PhLogging().console().debug('filter condi btn')
