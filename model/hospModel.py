@@ -76,10 +76,10 @@ class PhHospModel(QAbstractTableModel):
     def flags(self, index):
         flags = super(PhHospModel, self).flags(index)
         if self.isQc:
-            if self._headers[index.column()] in PhAppConfig().getConf()['can_change_cols']:
+            if self._headers[index.column()] in PhAppConfig().getConf()['qc_can_change_cols']:
                 flags = flags | Qt.ItemIsEditable
         else:
-            if self._headers[index.column()] in PhAppConfig().getConf()['qc_can_change_cols']:
+            if self._headers[index.column()] in PhAppConfig().getConf()['can_change_cols']:
                 flags = flags | Qt.ItemIsEditable
         return flags
 

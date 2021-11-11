@@ -60,6 +60,7 @@ class PhMainWidget(QWidget):
             self.tableView.setColumnHidden(15, True)
             self.tableView.setColumnHidden(16, True)
             self.tableView.setColumnHidden(17, True)
+            self.tableView.setColumnHidden(18, True)
 
         upLayout.addWidget(nameLabel)
         upLayout.addWidget(logoutBtn)
