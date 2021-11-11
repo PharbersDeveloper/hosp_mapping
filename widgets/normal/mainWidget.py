@@ -33,7 +33,7 @@ class PhMainWidget(QWidget):
         self.tableView.setModel(model)
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
 
-        self.tableView.setColumnHidden(1,True)
+        self.tableView.setColumnHidden(1, True)
 
         self.wev = PhWebWidget() # QWebEngineView()
         # self.wev.load(QUrl('https://www.baidu.com'))

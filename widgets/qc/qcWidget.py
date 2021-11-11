@@ -27,6 +27,7 @@ class PhQcWidget(PhMainWidget):
         model.signal_no_data.connect(self.on_no_data_for_tmp_user)
         self.tableView.setModel(model)
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
+        self.tableView.setColumnHidden(1, True)
 
         # 用户信息
         nameLabel = QLabel(PhAppConfig().getConf()['displayName'])
@@ -42,6 +43,11 @@ class PhQcWidget(PhMainWidget):
 
         upLayout.addWidget(nameLabel)
         upLayout.addWidget(logoutBtn)
+
+        self.wev = PhWebWidget() # QWebEngineView()
+        # self.wev.load(QUrl('https://www.baidu.com'))
+        self.wev.load(QUrl('https://cn.bing.com'))
+
 
         if PhAppConfig().isAdmin():
             progressLabel = PhProgressLabel()
@@ -59,6 +65,7 @@ class PhQcWidget(PhMainWidget):
         self.mainLayout.addWidget(self.tableView)
         # self.mainLayout.addWidget(self.wev)
         self.setLayout(self.mainLayout)
+        self.mainLayout.addWidget(self.wev)
 
     def on_qc_filter_condi_btn_clicked(self):
         PhLogging().console().debug('filter condi btn')
@@ -72,3 +79,10 @@ class PhQcWidget(PhMainWidget):
         PhSQLQueryBuilder().filters = condi
         PhSQLQueryBuilder().skip = 0
         self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
+
+    def on_no_data_for_tmp_user(self):
+        PhLogging().console().debug('none data for temp user')
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle('没有你需要处理的数据!')
+        dlg.setText('没有你需要处理的数据')
+        dlg.exec()
