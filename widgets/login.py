@@ -5,12 +5,14 @@ from helpers.localStorage import PhLocalStorage
 from helpers.phLogging import PhLogging
 from helpers.queryBuilder import PhSQLQueryBuilder
 from ui.login import Ui_Form
-from widgets.mainWidget import PhMainWidget
+from widgets.dialogs.choiceDlg import PhChoiceDlg
+from widgets.normal.mainWidget import PhMainWidget
 import http.client
 import hashlib
 from urllib.parse import urlencode
 import json
 from helpers.appConfig import PhAppConfig
+from widgets.qc.qcWidget import PhQcWidget
 
 
 class PhLoginWidget(QWidget):
@@ -20,6 +22,9 @@ class PhLoginWidget(QWidget):
         self.ui.setupUi(self)
         self.ui.summitBtn.clicked.connect(self._summitBtn_Clicked)
         self.mw = None
+        self.choice = PhChoiceDlg()
+        self.choice.signal_normal_work.connect(self.on_normal_work_clicked)
+        self.choice.signal_qc_work.connect(self.on_qc_work_clicked)
 
     def _summitBtn_Clicked(self):
         userName = self.ui.userLineEdit.text()
@@ -55,10 +60,9 @@ class PhLoginWidget(QWidget):
             PhLocalStorage().pushLastLoginUser(conf.getConf()['userId'])
             self.appPrepareQueryCondi()
             self.hide()
-            if self.mw is None:
-                self.mw = PhMainWidget()
-                self.mw.user_logout.connect(self.on_user_logout_event)
-            self.mw.showMaximized()
+
+            PhLogging().console().debug("need to show choice")
+            self.choice.show()
         else:
             dlg = QMessageBox(self)
             dlg.setWindowTitle('Login Failed!')
@@ -133,3 +137,17 @@ class PhLoginWidget(QWidget):
     def serverCondiAdapter(self, item):
         return [item['uid'], item['uname'], item['condi']]
 
+    def on_normal_work_clicked(self):
+        if self.mw is None:
+            self.mw = PhMainWidget()
+            self.mw.user_logout.connect(self.on_user_logout_event)
+        self.mw.showMaximized()
+        self.choice.hide()
+
+    def on_qc_work_clicked(self):
+        PhLogging().console().debug("qc works")
+        if self.mw is None:
+            self.mw = PhQcWidget()
+            self.mw.user_logout.connect(self.on_user_logout_event)
+        self.mw.showMaximized()
+        self.choice.hide()

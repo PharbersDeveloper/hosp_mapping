@@ -15,6 +15,7 @@ CREATE TABLE prod_clean(
 `lStatus` String,
 `lop` String,
 `ltm` String,
+`cst` String,
 `cop` String,
 `ctm` String)
 ENGINE = MergeTree()
