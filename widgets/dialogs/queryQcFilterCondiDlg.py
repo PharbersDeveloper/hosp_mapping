@@ -45,7 +45,7 @@ class PhQueryQcFilterCondiDlg(QDialog):
 
         btn_layout = QHBoxLayout()
         summit_btn = QPushButton("提交")
-        cancel_btn = QPushButton("退出筛选")
+        cancel_btn = QPushButton("清除筛选条件")
         btn_layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
         btn_layout.addWidget(summit_btn)
         btn_layout.addWidget(cancel_btn)
