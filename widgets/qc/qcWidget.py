@@ -27,6 +27,7 @@ class PhQcWidget(PhMainWidget):
         model.signal_no_data.connect(self.on_no_data_for_tmp_user)
         self.tableView.setModel(model)
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
+        self.tableView.setColumnHidden(1, True)
 
         # 用户信息
         nameLabel = QLabel(PhAppConfig().getConf()['displayName'])
@@ -76,4 +77,12 @@ class PhQcWidget(PhMainWidget):
         PhLogging().console().debug('filter condi changed')
         PhLogging().console().debug(condi)
         PhSQLQueryBuilder().filters = condi
+        PhSQLQueryBuilder().skip = 0
         self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
+
+    def on_no_data_for_tmp_user(self):
+        PhLogging().console().debug('none data for temp user')
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle('没有你需要处理的数据!')
+        dlg.setText('没有你需要处理的数据')
+        dlg.exec()
