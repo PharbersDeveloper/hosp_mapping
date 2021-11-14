@@ -12,6 +12,9 @@
     "condi_schema": [
         "uid", "uname", "condi"
     ],
+    "condi_schema_local": [
+        "uid", "uname", "condi", "min", "max"
+    ],
     "can_change_cols": [
         "医院现用名称", "医院别名/曾用名", "所属区县", "医院地址", "医院等级", "经济类型", "医院电话", "医院网址", "经营状态"
     ],

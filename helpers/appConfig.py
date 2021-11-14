@@ -19,6 +19,7 @@ class PhAppConfig(object):
         tmp = json.loads(f.read(4096))
         self.conf['defined_schema'] = tmp['schema']
         self.conf['condi_schema'] = tmp['condi_schema']
+        self.conf['condi_schema_local'] = tmp['condi_schema_local']
         self.conf['trans_schema'] = tmp['trans_schema']
         self.conf['table'] = tmp['table']
         self.conf['count_condi'] = tmp['count_condi']

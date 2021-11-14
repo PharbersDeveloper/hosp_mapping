@@ -1,27 +1,23 @@
 from PyQt5.QtCore import QSize, pyqtSignal
-from PyQt5.QtWidgets import QDialog, QTableView, QVBoxLayout, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy
-
-from helpers.appConfig import PhAppConfig
-from model.queryCondiModel import PhQueryCondiModel
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QLabel
 
 
-class PhQueryCandiDlg(QDialog):
+class PhRequestNormalWorkDlg(QDialog):
     signal_change_candi = pyqtSignal()
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setupLayout()
 
-        self.tableView = QTableView()
-        model = PhQueryCondiModel()
-        model.updateData(PhAppConfig().condi)
-        self.tableView.setModel(model)
+    def setupLayout(self):
+        label = QLabel('你将继续向后申请100条数据')
 
         ml = QVBoxLayout()
-        ml.addWidget(self.tableView)
+        ml.addWidget(label)
         btn_layout = QHBoxLayout()
         cancel_btn = QPushButton()
-        cancel_btn.setText('取消')
+        cancel_btn.setText('取消申请')
         summit_btn = QPushButton()
-        summit_btn.setText('更新')
+        summit_btn.setText('确认申请')
         btn_layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
         btn_layout.addWidget(cancel_btn)
         btn_layout.addWidget(summit_btn)
@@ -33,13 +29,13 @@ class PhQueryCandiDlg(QDialog):
         self.setLayout(ml)
 
     def on_cancel_btn_click(self):
-        self.deleteLater()
+        # self.deleteLater()
         pass
 
     def on_summit_btn_click(self):
-        self.signal_change_candi.emit()
-        self.deleteLater()
+        # self.signal_change_candi.emit()
+        # self.deleteLater()
         pass
 
     def sizeHint(self):
-        return QSize(1000, 500)
+        return QSize(500,500)
