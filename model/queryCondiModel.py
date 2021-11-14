@@ -3,6 +3,8 @@ import http.client
 import json
 from helpers.appConfig import PhAppConfig
 from helpers.phLogging import PhLogging
+import re
+import traceback
 
 
 class PhQueryCondiModel(QAbstractTableModel):
@@ -13,7 +15,8 @@ class PhQueryCondiModel(QAbstractTableModel):
     """
     def __init__(self):
         super(PhQueryCondiModel, self).__init__()
-        self._headers = PhAppConfig().getConf()['condi_schema']
+        # self._headers = PhAppConfig().getConf()['condi_schema']
+        self._headers = PhAppConfig().getConf()['condi_schema_local']
         self._data = []
 
     def updateData(self, data):
@@ -26,7 +29,15 @@ class PhQueryCondiModel(QAbstractTableModel):
 
     def data(self, index, role=None):
         if role == Qt.DisplayRole:
-            value = self._data[index.row()][index.column()]
+            if index.column() < 3:
+                value = self._data[index.row()][index.column()]
+            else:
+                condi = self._data[index.row()][2]
+                min, max = PhAppConfig().condi2IndexRange(condi)
+                if index.column() == self._headers.index("min"):
+                    value = min
+                else:
+                    value = max
             return value
 
         if role == Qt.DecorationRole:
@@ -56,20 +67,36 @@ class PhQueryCondiModel(QAbstractTableModel):
 
     def flags(self, index: QModelIndex):
         flags = super(PhQueryCondiModel, self).flags(index)
-        if index.column() == self._headers.index('condi'):
+        # if index.column() == self._headers.index('condi'):
+        if (index.column() == self._headers.index('min')) | \
+            (index.column() == self._headers.index('max')):
             flags = flags | Qt.ItemIsEditable
         return flags
 
     def setData(self, index, value, role=Qt.EditRole):
-        # 编辑后更新模型中的数据 View中编辑后，View会调用这个方法修改Model中的数据
-        if index.isValid() and 0 <= index.row() < len(self._data) and value:
-            col = index.column()
-            if 0 < col < len(self._headers):
-                self.beginResetModel()
-                self._data[index.row()][col] = value
-                self.endResetModel()
-                PhAppConfig().condi[index.row()][col] = value
-                PhLogging().console().debug(PhAppConfig().condi)
-                return True
-        else:
+        try:
+            if index.isValid() and 0 <= index.row() < len(self._data) and value:
+                col = index.column()
+                col_condi = self._headers.index('condi')
+                val_min, val_max = PhAppConfig().condi2IndexRange(self._data[index.row()][col_condi])
+                if col == self._headers.index('min'):
+                    val_min = int(value)
+                else:
+                    val_max = int(value)
+                re_condi = PhAppConfig().IndexRange2Condi(val_min, val_max)
+
+                if 0 < col < len(self._headers):
+                    self.beginResetModel()
+                    # self._data[index.row()][col] = value
+                    self._data[index.row()][col_condi] = re_condi
+                    self.endResetModel()
+                    PhAppConfig().condi[index.row()][col_condi] = re_condi
+                    PhLogging().console().debug(PhAppConfig().condi)
+                    return True
+            else:
+                return False
+        except Exception as e:
+            PhLogging().console().debug(e.args)
+            PhLogging().console().debug('============>')
+            PhLogging().console().debug(traceback.format_exc())
             return False

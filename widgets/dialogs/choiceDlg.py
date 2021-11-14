@@ -1,3 +1,4 @@
+from PyQt5 import QtCore
 from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QTableView, QVBoxLayout, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QLabel
 
@@ -26,7 +27,13 @@ class PhChoiceDlg(QDialog):
 
         normal_btn.clicked.connect(self.on_normal_btn_click)
         qc_btn.clicked.connect(self.on_qc_btn_click)
-
+        # self.setWindowFlags()
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint |
+                            QtCore.Qt.WindowMaximizeButtonHint |
+                            QtCore.Qt.MSWindowsFixedSizeDialogHint)
+        self.setFixedSize(301, 193)
+        self.setWindowTitle("工作选择")
+        # self.resize(301, 193)
         self.setLayout(ml)
 
     def on_normal_btn_click(self):

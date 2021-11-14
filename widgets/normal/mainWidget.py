@@ -14,6 +14,7 @@ from helpers.queryBuilder import PhSQLQueryBuilder
 from widgets.dialogs.queryCondiDlg import PhQueryCandiDlg
 from widgets.commom.progressLabel import PhProgressLabel
 from widgets.commom.webWidget import PhWebWidget
+from widgets.dialogs.requestNormalWorkDlg import PhRequestNormalWorkDlg
 
 
 class PhMainWidget(QWidget):
@@ -52,7 +53,8 @@ class PhMainWidget(QWidget):
         refreshBtn.setText('刷新')
         candiBtn = QPushButton()
         candiBtn.setText('任务分配')
-        refreshBtn.setEnabled(False)
+        requestBtn = QPushButton()
+        requestBtn.setText('任务认领')
 
         if PhAppConfig().isTmpUser():
             candiBtn.setEnabled(False)
@@ -70,6 +72,7 @@ class PhMainWidget(QWidget):
             upLayout.addWidget(progressLabel)
 
         upLayout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        upLayout.addWidget(requestBtn)
         upLayout.addWidget(candiBtn)
         upLayout.addWidget(refreshBtn)
         upLayout.addWidget(synBtn)
@@ -77,6 +80,7 @@ class PhMainWidget(QWidget):
         candiBtn.clicked.connect(self.on_candi_btn_clicked)
         synBtn.clicked.connect(self.on_sync_btn_clicked)
         refreshBtn.clicked.connect(self.on_refresh_btn_clicked)
+        requestBtn.clicked.connect(self.on_request_btn_clicked)
 
         self.mainLayout = QVBoxLayout()
         self.mainLayout.addItem(upLayout)
@@ -138,22 +142,22 @@ class PhMainWidget(QWidget):
         unidx = self.check_nun_values()
         if len(unidx) > 0:
             PhLogging().console().fatal('某行出现错误')
-            QMessageBox.critical(self, "同步错误", "{}行出现错误".format(','.join(unidx)))
+            QMessageBox.critical(self, '同步错误', '{}行出现错误'.format(','.join(unidx)))
             return
 
         if len(PhLocalStorage().getStorage()['unsync_steps_index']) == 0:
             PhLogging().console().debug('没有需要同步的信息')
-            QMessageBox.information(self, "同步成功", "同步数据成功")
+            QMessageBox.information(self, '没有需要同步的信息', '没有需要同步的信息')
             return
 
         if not self.updataDBQuery(PhSQLQueryBuilder().alertDeleteSQL(PhLocalStorage().getStorage()['unsync_steps_index'])):
             PhLogging().console().fatal('错误，请联系管理员')
-            QMessageBox.critical(self, "同步错误", "同步错误，请联系管理员")
+            QMessageBox.critical(self, '同步错误', '同步错误，请联系管理员')
             return
 
         if not self.updataDBQuery(PhSQLQueryBuilder().alertInsertMultiSQL(PhLocalStorage().getStorage()['unsync_steps'])):
             PhLogging().console().fatal('错误，请联系管理员')
-            QMessageBox.critical(self, "同步错误", "同步错误，请联系管理员")
+            QMessageBox.critical(self, '同步错误', '同步错误，请联系管理员')
             return
 
         # 清除本地操作缓存
@@ -163,7 +167,7 @@ class PhMainWidget(QWidget):
         PhLocalStorage().getStorage()['unsync_steps_index'] = []
         PhLocalStorage().afterSyncUnsavedSteps()
 
-        QMessageBox.information(self, "同步成功", "同步数据成功")
+        QMessageBox.information(self, '同步成功', '同步数据成功')
 
 
     def on_refresh_btn_clicked(self):
@@ -192,6 +196,12 @@ class PhMainWidget(QWidget):
         if not self.updataDBQuery(PhSQLQueryBuilder().alterAllCandi()):
             PhLogging().console().fatal('错误，请联系管理员')
             return
+
+    def on_request_btn_clicked(self):
+        PhLogging().console().debug('request btn clicked')
+        dlg = PhRequestNormalWorkDlg()
+        dlg.signal_change_candi.connect(self.on_condi_change)
+        dlg.exec()
 
     def updataDBQuery(self, sql):
         parameters = {

@@ -1,6 +1,9 @@
 # -*- coding:utf-8 -*-
+from helpers.phLogging import PhLogging
 from helpers.singleton import singleton
 import json
+import re
+from functools import reduce
 
 
 @singleton
@@ -19,6 +22,7 @@ class PhAppConfig(object):
         tmp = json.loads(f.read(4096))
         self.conf['defined_schema'] = tmp['schema']
         self.conf['condi_schema'] = tmp['condi_schema']
+        self.conf['condi_schema_local'] = tmp['condi_schema_local']
         self.conf['trans_schema'] = tmp['trans_schema']
         self.conf['table'] = tmp['table']
         self.conf['count_condi'] = tmp['count_condi']
@@ -38,3 +42,35 @@ class PhAppConfig(object):
 
     def filterEmpty(self, lst):
         return list(filter(lambda x: x != '', lst))
+
+    def condi2IndexRange(self, condi):
+        regex = r"\d+"
+        matches = re.finditer(regex, condi, re.MULTILINE)
+        result = []
+        for matchNum, match in enumerate(matches, start=1):
+            result.append(int(match.group()))
+
+        if len(result) > 1:
+            return min(result), max(result)
+        elif len(result) == 1:
+            return min(result), -1
+        else:
+            return -1, -1
+
+    def IndexRange2Condi(self, min, max):
+        result = []
+        if min >= 0:
+            result.append('Index >= ' + str(min))
+
+        if max >= 0:
+            result.append('Index < ' + str(max))
+
+        if len(result) > 0:
+            return ' and '.join(result)
+        else:
+            return 'Index == -1'
+
+    def findMaxRequestIndex(self):
+        all_indices = list(map(lambda x: list(self.condi2IndexRange(x[2])), self.condi))
+        all_indices = reduce(lambda x, y: x.union(y), all_indices)
+        return max(all_indices)

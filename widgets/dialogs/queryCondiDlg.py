@@ -42,4 +42,4 @@ class PhQueryCandiDlg(QDialog):
         pass
 
     def sizeHint(self):
-        return QSize(500,500)
+        return QSize(1000, 500)

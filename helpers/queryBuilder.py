@@ -58,10 +58,11 @@ class PhSQLQueryBuilder(object):
         return ist_sql
 
     def queryCondiSQL(self, uid):
-        if PhAppConfig().getConf()['scope'] != '*':
-            return "select * from prod_partition_condi where uid='" + uid + "';"
-        else:
-            return "select * from prod_partition_condi;"
+        return "select * from prod_partition_condi;"
+        # if PhAppConfig().getConf()['scope'] != '*':
+        #     return "select * from prod_partition_condi where uid='" + uid + "';"
+        # else:
+        #     return "select * from prod_partition_condi;"
 
     def deleteAllCandi(self):
         return "alter table prod_partition_condi delete where uid !=''"

@@ -21,6 +21,9 @@ class PhLoginWidget(QWidget):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.ui.summitBtn.clicked.connect(self._summitBtn_Clicked)
+        self.ui.summitBtn.setDefault(True)
+        self.ui.userLineEdit.returnPressed.connect(self._summitBtn_Clicked)
+        self.ui.pwdLineEdit.returnPressed.connect(self._summitBtn_Clicked)
         self.mw = None
         self.choice = PhChoiceDlg()
         self.choice.signal_normal_work.connect(self.on_normal_work_clicked)
