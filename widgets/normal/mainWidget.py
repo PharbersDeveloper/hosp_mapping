@@ -14,6 +14,7 @@ from helpers.queryBuilder import PhSQLQueryBuilder
 from widgets.dialogs.queryCondiDlg import PhQueryCandiDlg
 from widgets.commom.progressLabel import PhProgressLabel
 from widgets.commom.webWidget import PhWebWidget
+from widgets.dialogs.requestNormalWorkDlg import PhRequestNormalWorkDlg
 
 
 class PhMainWidget(QWidget):
@@ -198,8 +199,9 @@ class PhMainWidget(QWidget):
 
     def on_request_btn_clicked(self):
         PhLogging().console().debug('request btn clicked')
-
-        pass
+        dlg = PhRequestNormalWorkDlg()
+        dlg.signal_change_candi.connect(self.on_condi_change)
+        dlg.exec()
 
     def updataDBQuery(self, sql):
         parameters = {

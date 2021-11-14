@@ -33,7 +33,7 @@ class PhQueryCondiModel(QAbstractTableModel):
                 value = self._data[index.row()][index.column()]
             else:
                 condi = self._data[index.row()][2]
-                min, max = self.condi2IndexRange(condi)
+                min, max = PhAppConfig().condi2IndexRange(condi)
                 if index.column() == self._headers.index("min"):
                     value = min
                 else:
@@ -68,8 +68,8 @@ class PhQueryCondiModel(QAbstractTableModel):
     def flags(self, index: QModelIndex):
         flags = super(PhQueryCondiModel, self).flags(index)
         # if index.column() == self._headers.index('condi'):
-        if (index.column() == int(self._headers.index('min'))) | \
-            (index.column() == int(self._headers.index('max'))):
+        if (index.column() == self._headers.index('min')) | \
+            (index.column() == self._headers.index('max')):
             flags = flags | Qt.ItemIsEditable
         return flags
 
@@ -78,12 +78,12 @@ class PhQueryCondiModel(QAbstractTableModel):
             if index.isValid() and 0 <= index.row() < len(self._data) and value:
                 col = index.column()
                 col_condi = self._headers.index('condi')
-                val_min, val_max = self.condi2IndexRange(self._data[index.row()][col_condi])
+                val_min, val_max = PhAppConfig().condi2IndexRange(self._data[index.row()][col_condi])
                 if col == self._headers.index('min'):
                     val_min = int(value)
                 else:
                     val_max = int(value)
-                re_condi = self.IndexRange2Condi(val_min, val_max)
+                re_condi = PhAppConfig().IndexRange2Condi(val_min, val_max)
 
                 if 0 < col < len(self._headers):
                     self.beginResetModel()
@@ -100,30 +100,3 @@ class PhQueryCondiModel(QAbstractTableModel):
             PhLogging().console().debug('============>')
             PhLogging().console().debug(traceback.format_exc())
             return False
-
-    def condi2IndexRange(self, condi):
-        regex = r"\d+"
-        matches = re.finditer(regex, condi, re.MULTILINE)
-        result = []
-        for matchNum, match in enumerate(matches, start=1):
-            result.append(int(match.group()))
-
-        if len(result) > 1:
-            return min(result), max(result)
-        elif len(result) == 1:
-            return min(result), -1
-        else:
-            return -1, -1
-
-    def IndexRange2Condi(self, min, max):
-        result = []
-        if min > 0:
-            result.append('Index >= ' + str(min))
-
-        if max > 0:
-            result.append('Index < ' + str(max))
-
-        if len(result) > 0:
-            return ' and '.join(result)
-        else:
-            return 'Index == -1'
