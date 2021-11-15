@@ -122,7 +122,8 @@ class PhLoginWidget(QWidget):
             PhAppConfig().condi = list(map(self.serverCondiAdapter, result))
             PhLogging().console().debug(PhAppConfig().condi)
             if PhAppConfig().isTmpUser():
-                PhSQLQueryBuilder().filters.append(PhAppConfig().condi[0][2])
+                PhSQLQueryBuilder().refresh_requestCondi()
+                # PhSQLQueryBuilder().filters.append(PhAppConfig().condi[0][2])
         else:
             error = res.read().decode('utf-8')
             PhLogging().console().debug(error)

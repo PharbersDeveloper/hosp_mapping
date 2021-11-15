@@ -57,12 +57,14 @@ class PhMainWidget(QWidget):
         requestBtn.setText('任务认领')
 
         if PhAppConfig().isTmpUser():
-            candiBtn.setEnabled(False)
+            candiBtn.setVisible(False)
             self.tableView.setColumnHidden(14, True)
             self.tableView.setColumnHidden(15, True)
             self.tableView.setColumnHidden(16, True)
             self.tableView.setColumnHidden(17, True)
             self.tableView.setColumnHidden(18, True)
+        else:
+            requestBtn.setVisible(False)
 
         upLayout.addWidget(nameLabel)
         upLayout.addWidget(logoutBtn)
@@ -196,11 +198,35 @@ class PhMainWidget(QWidget):
         if not self.updataDBQuery(PhSQLQueryBuilder().alterAllCandi()):
             PhLogging().console().fatal('错误，请联系管理员')
             return
+        PhSQLQueryBuilder().refresh_requestCondi()
+        QMessageBox.warning(self, '修改任务成功', '修改任务成功')
+        self.on_refresh_btn_clicked()
+
+    def on_request_condi_change(self, step):
+        # 1. 看有没有需要再次同步的数据
+        # TODO: 这个地方不对, 不是未同步的是未做的
+        if PhLocalStorage().getStorage()['unsync_step_count'] > 0:
+            QMessageBox.warning(self, '错误', '你有未完成的工作，请做完工作在认领新工作，如有疑问，请联系管理员')
+            return
+
+        # 2. 查找没有被分配的最大的Index
+        startIdx = PhAppConfig().findMaxRequestIndex()
+        PhLogging().console().debug(startIdx)
+
+        # 3. 更新Condi
+        endIdx = startIdx + step
+        for item in PhAppConfig().condi:
+            if item[0] == PhAppConfig().getConf()['userId']:
+                item[2] = PhAppConfig().IndexRange2Condi(startIdx, endIdx)
+                break
+
+        PhLogging().console().debug(PhAppConfig().condi)
+        self.on_condi_change()
 
     def on_request_btn_clicked(self):
         PhLogging().console().debug('request btn clicked')
         dlg = PhRequestNormalWorkDlg()
-        dlg.signal_change_candi.connect(self.on_condi_change)
+        dlg.signal_request_change_candi.connect(self.on_request_condi_change)
         dlg.exec()
 
     def updataDBQuery(self, sql):
