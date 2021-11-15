@@ -120,7 +120,7 @@ class PhHospModel(QAbstractTableModel):
     def isRequestJobDone(self):
         try:
             check_cols = PhAppConfig().getConf()['non_null_cols']
-            schema = PhAppConfig().getConf()['define_schema']
+            schema = PhAppConfig().getConf()['trans_schema']
             idnices = []
             for iter in check_cols:
                 idnices.append(schema.index(iter))
