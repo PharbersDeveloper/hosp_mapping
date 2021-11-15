@@ -171,7 +171,6 @@ class PhMainWidget(QWidget):
 
         QMessageBox.information(self, '同步成功', '同步数据成功')
 
-
     def on_refresh_btn_clicked(self):
         PhSQLQueryBuilder().skip = 0
         self.tableView.model().updateData(self.queryDatabaseData(PhSQLQueryBuilder().querySelectSQL()))
@@ -205,7 +204,7 @@ class PhMainWidget(QWidget):
     def on_request_condi_change(self, step):
         # 1. 看有没有需要再次同步的数据
         # TODO: 这个地方不对, 不是未同步的是未做的
-        if PhLocalStorage().getStorage()['unsync_step_count'] > 0:
+        if (PhLocalStorage().getStorage()['unsync_step_count'] > 0) | (not self.tableView.model().isRequestJobDone()):
             QMessageBox.warning(self, '错误', '你有未完成的工作，请做完工作在认领新工作，如有疑问，请联系管理员')
             return
 
