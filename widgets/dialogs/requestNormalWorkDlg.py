@@ -1,14 +1,9 @@
 from PyQt5.QtCore import QSize, pyqtSignal
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QLabel, \
-    QMessageBox
-
-from helpers.appConfig import PhAppConfig
-from helpers.localStorage import PhLocalStorage
-from helpers.phLogging import PhLogging
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QLabel
 
 
 class PhRequestNormalWorkDlg(QDialog):
-    signal_change_candi = pyqtSignal()
+    signal_request_change_candi = pyqtSignal(int)
     g_request_step = 100
 
     def __init__(self, parent=None):
@@ -39,28 +34,7 @@ class PhRequestNormalWorkDlg(QDialog):
         self.deleteLater()
 
     def on_summit_btn_click(self):
-        # self.signal_change_candi.emit()
-        # self.deleteLater()
-        # 1. 看有没有需要再次同步的数据
-        # TODO: 这个地方不对, 不是未同步的是未做的
-        if PhLocalStorage().getStorage()['unsync_step_count'] > 0:
-            QMessageBox.warning(self, '错误', '你有未完成的工作，请做完工作在认领新工作，如有疑问，请联系管理员')
-            return
-
-        # 2. 查找没有被分配的最大的Index
-        startIdx = PhAppConfig().findMaxRequestIndex()
-        PhLogging().console().debug(startIdx)
-
-        # 3. 更新Condi
-        endIdx = startIdx + self.g_request_step
-        for item in PhAppConfig().condi:
-            if item[0] == PhAppConfig().getConf()['userId']:
-                item[2] = PhAppConfig().IndexRange2Condi(startIdx, endIdx)
-                break
-
-        PhLogging().console().debug(PhAppConfig().condi)
-        self.signal_change_candi.emit()
-
+        self.signal_request_change_candi.emit(self.g_request_step)
         self.deleteLater()
 
     def sizeHint(self):

@@ -146,3 +146,9 @@ class PhSQLQueryBuilder(object):
         sql = "insert or replace into last_user ( uid, id ) VALUES ( '" + uid + "', 1);"
         PhLogging().console().debug(sql)
         return sql
+
+    def refresh_requestCondi(self):
+        current_user = PhAppConfig().getConf()["userId"]
+        tmp = list(filter(lambda x: x[0] == current_user, PhAppConfig().condi))
+        PhSQLQueryBuilder().filters = []
+        PhSQLQueryBuilder().filters.append(tmp[0][2])

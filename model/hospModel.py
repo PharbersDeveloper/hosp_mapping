@@ -116,3 +116,19 @@ class PhHospModel(QAbstractTableModel):
                     return True
             else:
                 return False
+
+    def isRequestJobDone(self):
+        try:
+            check_cols = PhAppConfig().getConf()['non_null_cols']
+            schema = PhAppConfig().getConf()['define_schema']
+            idnices = []
+            for iter in check_cols:
+                idnices.append(schema.index(iter))
+
+            for item in self._data:
+                for check_idx in idnices:
+                    if item[check_idx] == '':
+                        raise Exception()
+            return True
+        except Exception as e:
+            return False
