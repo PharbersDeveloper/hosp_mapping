@@ -72,5 +72,5 @@ class PhAppConfig(object):
 
     def findMaxRequestIndex(self):
         all_indices = list(map(lambda x: list(self.condi2IndexRange(x[2])), self.condi))
-        all_indices = reduce(lambda x, y: x.union(y), all_indices)
+        all_indices = reduce(lambda x, y: x + y, all_indices)
         return max(all_indices)
