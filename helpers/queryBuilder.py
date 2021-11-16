@@ -148,7 +148,8 @@ class PhSQLQueryBuilder(object):
         return sql
 
     def refresh_requestCondi(self):
-        current_user = PhAppConfig().getConf()["userId"]
-        tmp = list(filter(lambda x: x[0] == current_user, PhAppConfig().condi))
-        PhSQLQueryBuilder().filters = []
-        PhSQLQueryBuilder().filters.append(tmp[0][2])
+        if PhAppConfig().isTmpUser():
+            current_user = PhAppConfig().getConf()["userId"]
+            tmp = list(filter(lambda x: x[0] == current_user, PhAppConfig().condi))
+            PhSQLQueryBuilder().filters = []
+            PhSQLQueryBuilder().filters.append(tmp[0][2])
