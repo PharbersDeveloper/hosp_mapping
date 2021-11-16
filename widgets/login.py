@@ -76,6 +76,8 @@ class PhLoginWidget(QWidget):
             dlg.exec()
 
     def loginOAuthPwdRequest(self, userName, pwd):
+        # Bug: pwd 里面有特殊字符
+        pwd = pwd.replace('\n', '')
         parameters = {
             'grant_type': 'password',
             'username': userName,

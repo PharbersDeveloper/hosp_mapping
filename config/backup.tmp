@@ -29,6 +29,7 @@ ENGINE = MergeTree()
 PRIMARY KEY `uid`;
 
 INSERT INTO prod_partition_condi (uid, uname, condi) VALUES ('ed9de660-9d25-4872-b792-94b44601789d', '跃马', 'Index < 0')
+INSERT INTO prod_partition_condi (uid, uname, condi) VALUES ('RyDChNOZFUd0f9oq', 'aceshihao', 'Index < 0'), ('DnStEfROCUXHN62d', 'bceshihao', 'Index < 0'), ('Jq5PNhLRnyesFlOm', 'cceshihao', 'Index < 0'), ('Iit4TR8nMc2ha3NQ', 'dceshihao', 'Index < 0'), ('dhCtA70Nx4ZWkGiR', 'eceshihao', 'Index < 0')
 
 如果Schema变了需要做的事情
 1. update sql
