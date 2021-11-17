@@ -1,4 +1,6 @@
-{
+# -*- coding:utf-8 -*-
+
+project_default_conf = {
     "table": "prod_clean_v3",
     "count_condi": "lop!=''",
     "schema": [
