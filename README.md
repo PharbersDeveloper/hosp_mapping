@@ -12,7 +12,6 @@
 pip install PyQt5
 pip install pyqt5-tools
 pip install PyQtWebEngine
-pip install tailer
 ```
 
 重要的点来了，找到自己的qt_application 路径
