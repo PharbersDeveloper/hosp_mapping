@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QLockFile
 from PyQt5.QtWidgets import QMessageBox
 
+from helpers.phLogging import PhLogging
 from widgets.login import PhLoginWidget
 import os
 import platform
@@ -17,6 +18,10 @@ if __name__ == '__main__':
     #     cwd = os.path.abspath(sys.argv[0])
     #     cwd = cwd[0:cwd.index('/', cwd.index('.app'))]
     #     os.chdir(cwd)
+
+    # PhLogging().setLoggingConfig(os.path.abspath(sys.argv[0]))
+    baseDir = os.path.abspath('.')
+    PhLogging().setLoggingConfig(baseDir)
 
     ssl._create_default_https_context = ssl._create_unverified_context
     app = QtWidgets.QApplication(sys.argv)
