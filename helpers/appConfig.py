@@ -2,6 +2,7 @@
 from helpers.phLogging import PhLogging
 from helpers.singleton import singleton
 import json
+from config.projectDataConfig import project_default_conf
 import re
 from functools import reduce
 
@@ -18,8 +19,10 @@ class PhAppConfig(object):
         return self.conf
 
     def queryDefinedSchemas(self):
-        f = open('./config/projectDataConfig.json', encoding='utf-8')
-        tmp = json.loads(f.read(4096))
+        # Bug: windows 可能出现的编码问题，现在把所有的文件读取全部去掉
+        # f = open('./config/projectDataConfig.json', encoding='utf-8')
+        # tmp = json.loads(f.read(4096))
+        tmp = project_default_conf
         self.conf['defined_schema'] = tmp['schema']
         self.conf['condi_schema'] = tmp['condi_schema']
         self.conf['condi_schema_local'] = tmp['condi_schema_local']
