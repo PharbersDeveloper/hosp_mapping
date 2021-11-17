@@ -1,5 +1,5 @@
 from PyQt5 import QtGui
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QUrl, QMutex
 from PyQt5.QtWidgets import QWidget, QTableView, QPushButton, QLabel, QMessageBox
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 
@@ -22,6 +22,7 @@ class PhMainWidget(QWidget):
     current_dy = 0
     last_dy = 0
     show_count = 0
+    mutex = QMutex()
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupLayout()
@@ -229,6 +230,12 @@ class PhMainWidget(QWidget):
         dlg.exec()
 
     def updataDBQuery(self, sql):
+        if self.mutex.locked:
+            PhLogging().console().debug("the query is been locked by other context")
+            return
+
+        self.mutex.lock()
+
         parameters = {
             'query': sql
         }
@@ -247,11 +254,13 @@ class PhMainWidget(QWidget):
             msg = {'message': 'update db success'}
             conn.close()
             PhLogging().console().debug(msg)
+            self.mutex.unlock()
             return True
         else:
             error = {'message': 'query db error'}
             conn.close()
             PhLogging().console().debug(error)
+            self.mutex.unlock()
             return False
 
     def queryDatabaseData(self, sql):
