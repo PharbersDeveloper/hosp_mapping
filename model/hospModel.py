@@ -85,7 +85,7 @@ class PhHospModel(QAbstractTableModel):
 
     def setData(self, index, value, role=Qt.EditRole):
         # 编辑后更新模型中的数据 View中编辑后，View会调用这个方法修改Model中的数据
-        value = value.replace("\t", "").replace("'", "")
+        value = value.replace("\t", "").replace("'", "").replace("\n", ",")
         if not self.isQc:
             lop_col = PhAppConfig().getConf()['defined_schema'].index('lop')
             ltm_col = PhAppConfig().getConf()['defined_schema'].index('ltm')
