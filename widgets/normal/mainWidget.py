@@ -17,6 +17,7 @@ from widgets.commom.webWidget import PhWebWidget
 from widgets.dialogs.requestNormalWorkDlg import PhRequestNormalWorkDlg
 
 
+
 class PhMainWidget(QWidget):
     user_logout = pyqtSignal()
     current_dy = 0
@@ -36,6 +37,7 @@ class PhMainWidget(QWidget):
         self.tableView.verticalScrollBar().valueChanged.connect(self.on_vertical_scrolled)
 
         self.tableView.setColumnHidden(1, True)
+
 
         self.wev = PhWebWidget() # QWebEngineView()
         # self.wev.load(QUrl('https://www.baidu.com'))
